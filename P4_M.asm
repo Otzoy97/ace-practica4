@@ -115,12 +115,14 @@ toLower MACRO charAC
 LOCAL _1, _2, _3, _4
     XOR SI, SI
     _1:
-        CMP charAC[SI], 24H    
+        CMP charAC[SI], 24H ;ES IGUAL A '$'   
+        JE _4               
+        CMP charAC[SI], 00H ;ES IGUAL A NULL
         JE _4
     _2:
-        CMP charAc[SI], 61h
+        CMP charAC[SI], 61h ;
         JAE _3              ;SI ES MAYOR O IGUAL A 
-        ADD charAc[SI], 20h
+        ADD charAC[SI], 20h
     _3:
         INC SI
         JMP _1
