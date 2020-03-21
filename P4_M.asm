@@ -21,6 +21,12 @@ printStrln MACRO charArray
     INT 21H
 ENDM
 
+printChar MACRO char
+    MOV AH, 02H
+    XOR DX, DX
+    MOV DL, char
+    INT 21H
+ENDM
 
 flushStr MACRO char_cte, size_cte, char
 LOCAL CLEAN
