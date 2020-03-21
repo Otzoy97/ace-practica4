@@ -109,31 +109,6 @@ LOCAL _1, _2, _3, _4, _5, _6, _7, _8, _9
         MOV AL, 00H
     _9:
         CMP AL, 01H
-
-
-    ;XOR SI, SI
-    ;XOR CX, CX
-    ;.WHILE (charAC[SI] != '$')
-    ;    INC SI
-    ;    INC CL
-    ;.ENDW
-    ;XOR SI, SI
-    ;.WHILE (charAR[SI] != '$')
-    ;    INC SI
-    ;    INC CH
-    ;.ENDW
-    ;XOR SI, SI
-    ;.IF (CL == CH)
-    ;    .WHILE (CL !=0)
-    ;        .IF (charAC[SI] != charAR[SI])
-    ;            MOV boolVar, 00H ;LA CADENA NO ES IGUAL
-    ;        .ENDIF
-    ;        INC SI
-    ;        DEC CL
-    ;    .ENDW
-    ;.ELSE
-    ;    MOV boolVar, 00H ;EL TAMAÑO DE LA CADENA DIFIERE
-    ;.ENDIF
 ENDM
 
 toLower MACRO charAC

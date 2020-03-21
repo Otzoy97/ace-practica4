@@ -1,57 +1,52 @@
 include P4_M.asm
 .model small
 ;--------------------------------------
-; SEGMENTO DE PILA
+; STACK SEGMENT
 ;--------------------------------------
 .stack
 ;--------------------------------------
-; SEGMENTO DE DATO
+; DATA SEGMENT
 ;--------------------------------------
 .data
-    fileNameStr db 50 DUP('$')
-    coinOption  db 5  DUP('$')
-    optionMsg   db 5  DUP('$')
-    ;handlerIn dw ?
-    ;bufferInfo db 200 dup('$')
 ;--------------------------------------
+;-------------- CONSTANT --------------
+;--------------------------------------
+;------------ PRINT BLOCKS ------------
 ln      db "$"
 hMsg    db "UNIVERSIDAD DE SAN CARLOS DE GUATEMALA", 0ah, 0dh, "FACULTAD DE INGENIERA", 0ah, 0dh, "CIENCIAS Y SISTEMA", 0ah, 0dh, "ARQUITECTURA DE COMPUTADORES Y ENSAMBLADORES 1", 0ah, 0dh, "NOMBRE: SERGIO FERNANDO OTZOY GONZALEZ", 0ah, 0dh, "CARNET: 201602782", 0ah, 0dh, "SECCION: A$"
 optMsg  db "    1) INICIAR JUEGO", 0ah, 0dh, "    2) CARGAR JUEGO", 0ah, 0dh, "    3) SALIR", 0ah, 0dh, 0ah, 0dh, "INGRESE UN VALOR[1/2/3]: $"
 trnMsg1 db "TURNO NEGRAS N : $"
 trnMsg2 db "TURNO BLANCAS B : $"
-
 svAsMsg db "INGRESE NOMBRE PARA GUARDAR: $"
 svRsMsg db "!JUEGO GUARDADO CON EXITO¡ $"
-
+;------------ BOARD PRINT -------------
 STREET  db 0BAH, "   $"
 AVENUE  db " ", 0CDH," $"
 SPCS3   db "   $"
 SPCS2   db "  $"
 SPCS1   db " $"
-
-LOGICM  db 64 DUP(20H)
-
-ctAVNE  db 38h ;CARACTER DE '8' 
-ctLTTR  db 41h ;CARACTER DE 'A'
-
-blackC  db "N$" ;'N'
-whiteC  db "B$" ;'B'
-
-actTurn db 1H ;0 BLANCAS, 1 NEGRAS
-ctPASS  db 0H ;CONTADOR PARA EL NÚMERO DE VECES QUE SE UTILIZA PASS
-
-boolV   db 1H ;VAR BOOLEANA QUE ME SERVIRÁ PARA RECUPERAR VALORES
-
+;------------ CMP BLOCKS -------------
 PASSrw db "pass$"
 EXITrw db "exit$"
 SHOWrw db "show$"
 SAVErw db "save$"
-
-
 PLAYWD  db "1$"
 LOADWD  db "2$"
 EXITWD  db "3$"
-
+;--------------------------------------
+;--------------- VOLATILE -------------
+;--------------------------------------
+LOGICM  db 64 DUP(20H)     ;ARREGLO DE 64 POSICIONES QUE SIMULAN UNA MATRIZ DE 2X2
+ctAVNE  db 38h             ;CARACTER DE '8' 
+ctLTTR  db 41h             ;CARACTER DE 'A'
+actTurn db 1H              ;0 BLANCAS, 1 NEGRAS, SERVIRÁ PARA DETERMINAR EL TURNO ACTUAL
+ctPASS  db 0H              ;CONTADOR PARA EL NÚMERO DE VECES QUE SE UTILIZA PASS
+fileNameStr db 50 DUP('$') ;ALOJARÁ EL NOMBRE LA RUTA DE UN ARCHIVO
+coinOption  db 5  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE MIENTRAS ESTÉ JUGANDO
+optionMsg   db 5  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE EN EL MENÚ PRINCIPAL
+;--------------------------------------
+; CODE SEGMENT
+;--------------------------------------
 .code
 main proc
     Header:
@@ -101,10 +96,10 @@ main proc
             compareStr coinOption, PASSrw
             JE Pass
             compareStr coinOption, SHOWrw
-            JE Show
+            JE Exit
             compareStr coinOption, SAVErw
-            JE Save
-            compareStr cointOption, EXITrw
+            JE Exit
+            compareStr coinOption, EXITrw
             JE Exit
             JMP Play
         _play3:
@@ -151,7 +146,7 @@ main proc
                 LOOP _loopStreetPrint
             JMP _loopDecAVNE            ;SE MUEVE A LA SIG INSTRUCCION
             _loopFootBoard:             
-                prinChar ctLTTR         ;IMPRIME A, B, C, D, E, F, G o H
+                printChar ctLTTR        ;IMPRIME A, B, C, D, E, F, G o H
                 printStr SPCS3          ;IMPRIME TRES ESPACIOS
                 INC ctLTTR              ;AUMENTA LA VARIABLE QUE ALMACENA EL CODIGO ASCII DE LAS LETRAS
                 LOOP _loopFootBoard
@@ -163,6 +158,22 @@ main proc
             MOV ctAVNE, 38h             ;REINICIA LA VARIABLE QUE CONTROLA EL CONTADOR DE FILAS
             MOV ctLTTR, 41h             ;REINICIA LA VARIABLE QUE CONTROLA EL CODIGO ASCII DE LAS LSETRAS (VER _loopFootBoard)
             JMP Play                    ;REGRESA AL CICLO DE PLAY
+    Pass:
+        INC ctPASS                      ;INCREMENTA EL CONTADOR
+        CMP ctPASS, 02H
+        JNE _passTurn
+        flushStr LOGICM, SIZEOF LOGICM, 20H ;LIMPIA EL ARREGLO LÓGICO DE POSICIONES
+        MOV actTurn, 01H                ;ESTABLECE EL TURNO PARA LAS NEGRAS
+        XOR ctPASS, ctPASS              ;LIMPIA EL VALOR DE ctPASS
+        JMP Header
+        _passTurn:
+            CMP actTurn, 01H
+            JNE _whiteTurn
+            DEC actTurn                     ;DISMINUYE actTurn, ESO HARÁ QUE SEA EL TURNO DE LAS BLANCAS
+            JMP Play                        ;REGRESA A LA SECCIÓN DE JUEGO
+        _whiteTurn:
+            INC actTurn                     ;INCREMENTA actTurn, ESO HARÁ QUE SEA EL TURNO DE LAS NEGRAS
+            JMP Play                        ;REGRESA A LA SECCIÓN DE JUEGO
     Exit:
         MOV AX, 4C00H
         XOR AL, AL
