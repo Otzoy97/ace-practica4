@@ -42,8 +42,8 @@ ctLTTR  db 41h             ;CARACTER DE 'A'
 actTurn db 1H              ;0 BLANCAS, 1 NEGRAS, SERVIRÁ PARA DETERMINAR EL TURNO ACTUAL
 ctPASS  db 0H              ;CONTADOR PARA EL NÚMERO DE VECES QUE SE UTILIZA PASS
 fileNameStr db 50 DUP('$') ;ALOJARÁ EL NOMBRE LA RUTA DE UN ARCHIVO
-coinOption  db 5  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE MIENTRAS ESTÉ JUGANDO
-optionMsg   db 5  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE EN EL MENÚ PRINCIPAL
+coinOption  db 6  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE MIENTRAS ESTÉ JUGANDO
+optionMsg   db 6  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE EN EL MENÚ PRINCIPAL
 ;--------------------------------------
 ; CODE SEGMENT
 ;--------------------------------------
@@ -112,7 +112,7 @@ main proc
             ADD AL, coinOption[0]       ;SUMA LA COLUMNA
             MOV BX, AX                  ;MUEVE EL RESULTADO A UN REGISTRO BASE
             CMP actTurn, 01H            ;¿TURNO?
-            JE _playwhite               ;TURNO DE BLANCAS
+            JNE _playwhite              ;TURNO DE BLANCAS
             MOV LOGICM[BX], 4EH         ;GUARDA FICHA NEGRA
             DEC actTurn                 ;ASIGNA TURNO A BLANCA
             JMP BoardPrint              ;IMPRIME TABLERO
@@ -164,7 +164,7 @@ main proc
         JNE _passTurn
         flushStr LOGICM, SIZEOF LOGICM, 20H ;LIMPIA EL ARREGLO LÓGICO DE POSICIONES
         MOV actTurn, 01H                ;ESTABLECE EL TURNO PARA LAS NEGRAS
-        XOR ctPASS, ctPASS              ;LIMPIA EL VALOR DE ctPASS
+        MOV ctPASS, 00H              ;LIMPIA EL VALOR DE ctPASS
         JMP Header
         _passTurn:
             CMP actTurn, 01H
