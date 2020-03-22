@@ -54,11 +54,11 @@ LOCAL GETCHAR, EOS, ERASE
         INC SI                  ;SI++
         JMP GETCHAR
     ERASE:
-        MOV AL, 00H
-        MOV charArray[SI], AL
-        MOV AL, 24H             ;$
-        DEC SI                  ;SI--
-        MOV charArray[SI], AL
+        MOV charArray[SI], 00H  ;MUEVE EN CARACTER NULO
+        CMP SI, 00H             
+        JE GETCHAR              ;SI, SI ES IGUAL A 0 REGRESARÁ A GETCHAR
+        DEC SI                  ;DISMINUYE SI
+        MOV charArray[SI], 24H  ;MUEVE UN CARACTER DE FINAL DE STRING
         JMP GETCHAR
     EOS:
         MOV AL, 00H             ;NULL
@@ -127,4 +127,37 @@ LOCAL _1, _2, _3, _4
         INC SI
         JMP _1
     _4:
+ENDM
+
+createFile MACRO fileName
+    MOV AH, 3CH
+    MOV CX, 00H
+    MOV DX, OFFSET fileName
+    INT 21H
+ENDM
+
+writeFile MACRO fileHandler, fileContent, fileSize
+    MOV AH, 40H
+    MOV BX, fileHandler
+    MOV CX, fileSize
+    MOV DX, OFFSET fileContent
+    INT 21H
+ENDM
+
+openFile MACRO  fileName, fileHandler
+    MOV AH, 3DH
+    MOV AL, 02H
+    MOV DX, OFFSET fileName
+    INT 21H
+    ;ESPECIFICAR ERROR
+ENDM
+
+closeFile MACRO fileHandler
+LOCAL _1
+    MOV AH, 3EH
+    MOV BX, fileHandler
+    INT 21H
+    JNC _1
+    printStrln fileEr3
+    _1:
 ENDM
