@@ -199,7 +199,7 @@ main proc
         createFile fileToSaveName           ;CREA EL ARCHIVO
         JC _err1ToPlay                      ;EXISTIÓ UN ERROR
         MOV fileHandlerVar, AX              ;ALMACENA EL HANDLER
-        writeFile fileHandlerVar, fileToSaveBffr, 81H ;ESCRIBE EN EL ARCHIVO
+        writeFile fileHandlerVar, fileToSaveBffr, 41H ;ESCRIBE EN EL ARCHIVO
         JC _err2ToPlay                      ;EXISTIÓ UN ERROR
         printStrln svRsMsg                  ;ARCHIVO CORRRECTAMENTE ESCRITO
         closeFile fileHandlerVar            ;CIERRA EL ARCHIVO
