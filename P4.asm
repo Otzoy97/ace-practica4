@@ -15,10 +15,16 @@ include P4_M.asm
 ln      db "$"
 hMsg    db "UNIVERSIDAD DE SAN CARLOS DE GUATEMALA", 0ah, 0dh, "FACULTAD DE INGENIERA", 0ah, 0dh, "CIENCIAS Y SISTEMA", 0ah, 0dh, "ARQUITECTURA DE COMPUTADORES Y ENSAMBLADORES 1", 0ah, 0dh, "NOMBRE: SERGIO FERNANDO OTZOY GONZALEZ", 0ah, 0dh, "CARNET: 201602782", 0ah, 0dh, "SECCION: A$"
 optMsg  db "    1) INICIAR JUEGO", 0ah, 0dh, "    2) CARGAR JUEGO", 0ah, 0dh, "    3) SALIR", 0ah, 0dh, 0ah, 0dh, "INGRESE UN VALOR[1/2/3]: $"
-trnMsg1 db "TURNO NEGRAS N : $"
-trnMsg2 db "TURNO BLANCAS B : $"
-svAsMsg db "INGRESE NOMBRE PARA GUARDAR: $"
-svRsMsg db "!JUEGO GUARDADO CON EXITO¡ $"
+trnMsg1 db "    TURNO NEGRAS N : $"
+trnMsg2 db "    TURNO BLANCAS B : $"
+svAsMsg db "    INGRESE NOMBRE PARA GUARDAR: $"
+svRsMsg db "    -- !JUEGO GUARDADO CON EXITO¡ --$"
+coinEr1 db "    -- MOVIMIENTO ILEGAL: SUICIDIO --$"
+coinEr2 db "    -- MOVIMIENTO ILEGAL: KO --$"
+coinEr3 db "    -- MOVIMIENTO ILEGAL: POSICION OCUPADA --$"
+fileEr1 db "    -- NO SE PUDO CREAR EL ARCHIVO --$"
+fileEr2 db "    -- NO SE PUDO ESCRIBIR EN EL ARCHIVO --$"
+fileEr3 db "    -- NO SE PUDO CERRAR EL ARCHIVO --$"
 ;------------ BOARD PRINT -------------
 STREET  db 0BAH, "   $"
 AVENUE  db " ", 0CDH," $"
@@ -44,6 +50,9 @@ ctPASS  db 0H              ;CONTADOR PARA EL NÚMERO DE VECES QUE SE UTILIZA PAS
 fileNameStr db 50 DUP('$') ;ALOJARÁ EL NOMBRE LA RUTA DE UN ARCHIVO
 coinOption  db 6  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE MIENTRAS ESTÉ JUGANDO
 optionMsg   db 6  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE EN EL MENÚ PRINCIPAL
+fileToSaveBffr db 130 DUP('$') ;ALOJARÁ EL CONTENIDO DEL ARCHIVO
+fileToSaveName db 50 DUP('$')  ;ALOJARÁ EL NOMBRE DEL ARCHIVO
+fileHandlerVar dw ?            ;
 ;--------------------------------------
 ; CODE SEGMENT
 ;--------------------------------------
@@ -98,7 +107,7 @@ main proc
             compareStr coinOption, SHOWrw
             JE Exit
             compareStr coinOption, SAVErw
-            JE Exit
+            JE Save
             compareStr coinOption, EXITrw
             JE Exit
             JMP Play
@@ -174,6 +183,37 @@ main proc
         _whiteTurn:
             INC actTurn                     ;INCREMENTA actTurn, ESO HARÁ QUE SEA EL TURNO DE LAS NEGRAS
             JMP Play                        ;REGRESA A LA SECCIÓN DE JUEGO
+    Save:
+        XOR BX, BX
+        XOR SI, SI
+        XOR CX, CX
+        MOV CX, 0040H
+        MOV AL, actTurn
+        MOV fileToSaveBffr, AL
+        _loopCreateBuffer:
+            MOV fileToSaveBffr[BX+SI+0001H], 2CH
+            MOV AL, LOGICM[SI]
+            MOV fileToSaveBffr[BX+SI+0002H], AL
+            INC SI
+            INC BX
+            LOOP _loopCreateBuffer
+        printStrln svAsMsg
+        getLine fileToSaveName
+        createFile fileNameStr
+        JC _err1ToPlay
+        MOV fileHandlerVar, AX
+        writeFile fileHandlerVar, fileToSaveBffr, 81H
+        JC _err2ToPlay
+        printStrln svRsMsg
+        closeFile fileHandlerVar
+        JMP Play
+        _err1ToPlay:
+            printStrln fileEr1
+            JMP Play
+        _err2ToPlay:
+            printStrln fileEr2
+            closeFile fileHandlerVar
+            JMP Play
     Exit:
         MOV AX, 4C00H
         XOR AL, AL
