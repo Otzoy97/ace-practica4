@@ -47,10 +47,9 @@ ctAVNE  db 38h             ;CARACTER DE '8'
 ctLTTR  db 41h             ;CARACTER DE 'A'
 actTurn db 1H              ;0 BLANCAS, 1 NEGRAS, SERVIRÁ PARA DETERMINAR EL TURNO ACTUAL
 ctPASS  db 0H              ;CONTADOR PARA EL NÚMERO DE VECES QUE SE UTILIZA PASS
-fileNameStr db 50 DUP('$') ;ALOJARÁ EL NOMBRE LA RUTA DE UN ARCHIVO
 coinOption  db 6  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE MIENTRAS ESTÉ JUGANDO
 optionMsg   db 6  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE EN EL MENÚ PRINCIPAL
-fileToSaveBffr db 130 DUP('$') ;ALOJARÁ EL CONTENIDO DEL ARCHIVO
+fileToSaveBffr db 66 DUP('$') ;ALOJARÁ EL CONTENIDO DEL ARCHIVO
 fileToSaveName db 50 DUP('$')  ;ALOJARÁ EL NOMBRE DEL ARCHIVO
 fileHandlerVar dw ?            ;
 ;--------------------------------------
@@ -184,36 +183,34 @@ main proc
             INC actTurn                     ;INCREMENTA actTurn, ESO HARÁ QUE SEA EL TURNO DE LAS NEGRAS
             JMP Play                        ;REGRESA A LA SECCIÓN DE JUEGO
     Save:
-        XOR BX, BX
-        XOR SI, SI
-        XOR CX, CX
-        MOV CX, 0040H
-        MOV AL, actTurn
-        MOV fileToSaveBffr, AL
-        _loopCreateBuffer:
-            MOV fileToSaveBffr[BX+SI+0001H], 2CH
-            MOV AL, LOGICM[SI]
-            MOV fileToSaveBffr[BX+SI+0002H], AL
-            INC SI
-            INC BX
+        XOR SI, SI                          ;LIMPIA EL INDICE
+        XOR CX, CX                          ;LIMPIA EL CONTEO
+        MOV CX, 0040H                       ;INICIALIZA EL CONTEO (64)
+        MOV AL, actTurn                     ;ALOJA EL TURNO ACTUAL
+        ADD AL, 30H                         ;CONVIERTE EL NUMERO EN UN CÓDIGO ASCII RECONOCIBLE
+        MOV fileToSaveBffr, AL              ;ALMACENA EL CODIGO ASCII
+        _loopCreateBuffer:          
+            MOV AL, LOGICM[SI]              ;MUEVE EL VALOR DE LOGICM AL ACUMULADOR
+            MOV fileToSaveBffr[SI+0001H], AL ;MUEVE EL ACUMULADOR AL BUFFER DE CONTENIDO DE ARCHIVO
+            INC SI                          ;INCREMENTA EL INDICE
             LOOP _loopCreateBuffer
-        printStrln svAsMsg
-        getLine fileToSaveName
-        createFile fileNameStr
-        JC _err1ToPlay
-        MOV fileHandlerVar, AX
-        writeFile fileHandlerVar, fileToSaveBffr, 81H
-        JC _err2ToPlay
-        printStrln svRsMsg
-        closeFile fileHandlerVar
-        JMP Play
-        _err1ToPlay:
-            printStrln fileEr1
-            JMP Play
+        printStrln svAsMsg                  ;SOLICITA EL NOMBRE DEL ARCHIVO
+        getLine fileToSaveName              ;RECUPERA EL NOMBRE DEL ARCHIVO
+        createFile fileToSaveName           ;CREA EL ARCHIVO
+        JC _err1ToPlay                      ;EXISTIÓ UN ERROR
+        MOV fileHandlerVar, AX              ;ALMACENA EL HANDLER
+        writeFile fileHandlerVar, fileToSaveBffr, 81H ;ESCRIBE EN EL ARCHIVO
+        JC _err2ToPlay                      ;EXISTIÓ UN ERROR
+        printStrln svRsMsg                  ;ARCHIVO CORRRECTAMENTE ESCRITO
+        closeFile fileHandlerVar            ;CIERRA EL ARCHIVO
+        JMP Play                            ;REGRESA AL FLUJO DEL JUEGO
+        _err1ToPlay:                        
+            printStrln fileEr1              ;NO SE PUDO CREAR EL ARCHIVO
+            JMP Play                        ;REGRESA AL FLUJO DEL JUEGO
         _err2ToPlay:
-            printStrln fileEr2
-            closeFile fileHandlerVar
-            JMP Play
+            printStrln fileEr2              ;NO SE PUDO ESCRIBIR EN EL ARCHIVO
+            closeFile fileHandlerVar        ;INTENTA CERRAR EL ARCHIVO
+            JMP Play                        ;REGRESA AL FLUJO DEL JUEGO
     Exit:
         MOV AX, 4C00H
         XOR AL, AL
