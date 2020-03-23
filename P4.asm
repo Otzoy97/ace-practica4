@@ -18,13 +18,17 @@ optMsg  db "    1) INICIAR JUEGO", 0ah, 0dh, "    2) CARGAR JUEGO", 0ah, 0dh, " 
 trnMsg1 db "    TURNO NEGRAS N : $"
 trnMsg2 db "    TURNO BLANCAS B : $"
 svAsMsg db "    INGRESE NOMBRE PARA GUARDAR: $"
-svRsMsg db "    -- !JUEGO GUARDADO CON EXITO¡ --$"
+loadMsg db "    INGRESE NOMBRE PARA CARGAR: $"
+svRsMsg db "    -- !JUEGO GUARDADO CON EXITO", 0ADH," --$"
 coinEr1 db "    -- MOVIMIENTO ILEGAL: SUICIDIO --$"
 coinEr2 db "    -- MOVIMIENTO ILEGAL: KO --$"
 coinEr3 db "    -- MOVIMIENTO ILEGAL: POSICION OCUPADA --$"
 fileEr1 db "    -- NO SE PUDO CREAR EL ARCHIVO --$"
 fileEr2 db "    -- NO SE PUDO ESCRIBIR EN EL ARCHIVO --$"
 fileEr3 db "    -- NO SE PUDO CERRAR EL ARCHIVO --$"
+fileEr4 db "    -- NO SE PUDO ABRIR EL ARCHIVO --$"
+fileEr5 db "    -- NO SE PUDO LEER EL ARCHIVO --$"
+fileSc1 db "    -- !JUEGO CARGADO CON EXITO", 0ADH," --$"
 ;------------ BOARD PRINT -------------
 STREET  db 0BAH, "   $"
 AVENUE  db " ", 0CDH," $"
@@ -49,8 +53,8 @@ actTurn db 1H              ;0 BLANCAS, 1 NEGRAS, SERVIRÁ PARA DETERMINAR EL TUR
 ctPASS  db 0H              ;CONTADOR PARA EL NÚMERO DE VECES QUE SE UTILIZA PASS
 coinOption  db 6  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE MIENTRAS ESTÉ JUGANDO
 optionMsg   db 6  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE EN EL MENÚ PRINCIPAL
-fileToSaveBffr db 66 DUP('$') ;ALOJARÁ EL CONTENIDO DEL ARCHIVO
-fileToSaveName db 50 DUP('$')  ;ALOJARÁ EL NOMBRE DEL ARCHIVO
+fileBuffer  db 66 DUP('$') ;ALOJARÁ EL CONTENIDO DEL ARCHIVO
+fileName    db 50 DUP('$')  ;ALOJARÁ EL NOMBRE DEL ARCHIVO
 fileHandlerVar dw ?            ;
 ;--------------------------------------
 ; CODE SEGMENT
@@ -68,7 +72,7 @@ main proc
         compareStr optionMsg, PLAYWD
         JE Play
         compareStr optionMsg, LOADWD
-        JE Exit    
+        JE Load    
         compareStr optionMsg, EXITWD
         JE Exit
         JMP MainMenu
@@ -108,7 +112,7 @@ main proc
             compareStr coinOption, SAVErw
             JE Save
             compareStr coinOption, EXITrw
-            JE Exit
+            JE ExitPlay
             JMP Play
         _play3:
             SUB coinOption[0], 61H      ;OBTIENE UN ÍNDICE DE COLUMNA, BASE 0 => coinOption[0] <- coinOption[0] - 61H
@@ -172,7 +176,7 @@ main proc
         JNE _passTurn
         flushStr LOGICM, SIZEOF LOGICM, 20H ;LIMPIA EL ARREGLO LÓGICO DE POSICIONES
         MOV actTurn, 01H                ;ESTABLECE EL TURNO PARA LAS NEGRAS
-        MOV ctPASS, 00H              ;LIMPIA EL VALOR DE ctPASS
+        MOV ctPASS, 00H                 ;LIMPIA EL VALOR DE ctPASS
         JMP Header
         _passTurn:
             CMP actTurn, 01H
@@ -188,18 +192,19 @@ main proc
         MOV CX, 0040H                       ;INICIALIZA EL CONTEO (64)
         MOV AL, actTurn                     ;ALOJA EL TURNO ACTUAL
         ADD AL, 30H                         ;CONVIERTE EL NUMERO EN UN CÓDIGO ASCII RECONOCIBLE
-        MOV fileToSaveBffr, AL              ;ALMACENA EL CODIGO ASCII
+        MOV fileBuffer, AL              ;ALMACENA EL CODIGO ASCII
         _loopCreateBuffer:          
             MOV AL, LOGICM[SI]              ;MUEVE EL VALOR DE LOGICM AL ACUMULADOR
-            MOV fileToSaveBffr[SI+0001H], AL ;MUEVE EL ACUMULADOR AL BUFFER DE CONTENIDO DE ARCHIVO
+            MOV fileBuffer[SI+0001H], AL ;MUEVE EL ACUMULADOR AL BUFFER DE CONTENIDO DE ARCHIVO
             INC SI                          ;INCREMENTA EL INDICE
             LOOP _loopCreateBuffer
         printStrln svAsMsg                  ;SOLICITA EL NOMBRE DEL ARCHIVO
-        getLine fileToSaveName              ;RECUPERA EL NOMBRE DEL ARCHIVO
-        createFile fileToSaveName           ;CREA EL ARCHIVO
+        flushStr fileName, SIZEOF fileName, 00H
+        getLine fileName              ;RECUPERA EL NOMBRE DEL ARCHIVO
+        createFile fileName           ;CREA EL ARCHIVO
         JC _err1ToPlay                      ;EXISTIÓ UN ERROR
         MOV fileHandlerVar, AX              ;ALMACENA EL HANDLER
-        writeFile fileHandlerVar, fileToSaveBffr, 41H ;ESCRIBE EN EL ARCHIVO
+        writeFile fileHandlerVar, fileBuffer, 41H ;ESCRIBE EN EL ARCHIVO
         JC _err2ToPlay                      ;EXISTIÓ UN ERROR
         printStrln svRsMsg                  ;ARCHIVO CORRRECTAMENTE ESCRITO
         closeFile fileHandlerVar            ;CIERRA EL ARCHIVO
@@ -211,6 +216,41 @@ main proc
             printStrln fileEr2              ;NO SE PUDO ESCRIBIR EN EL ARCHIVO
             closeFile fileHandlerVar        ;INTENTA CERRAR EL ARCHIVO
             JMP Play                        ;REGRESA AL FLUJO DEL JUEGO
+    Load:
+        printStrln loadMsg                  ;INFORMA AL USUARIO QUE INGRESE EL NOMBRE DEL ARCHIVO
+        flushStr fileName, SIZEOF fileName, 00H ;LIMPIA LA CADENA EN LA QUE SE ALMACENARÁ EL NOMBRE DEL ARCHIVO
+        getLine fileName                        ;RECUPERA EL NOMBRE DEL ARCHIVO
+        openFile fileName, fileHandlerVar       ;INTENTA ABRIR EL ARCHIVO 
+        JC _loadErr4                            ;NO PUDO ABRIR EL ARCHIVO
+        MOV fileHandlerVar, AX                  ;ALMACENA EL HANDLER DEL ARCHIVO
+        readFile fileHandlerVar, fileBuffer, 41h ;LEE EL CONTENIDO DEL ARCHIVO Y LO ALMACENA EN EL BUFFER
+        JC _loadErr5                            ;NO PUDO LEER EL ARCHIVO
+        closeFile fileHandlerVar                ;CIERRA EL ARCHIVO
+        printStrln fileSc1                      ;INFORMA AL USUARIO QUE EL PROCESO FUE EXITOSO
+        XOR SI, SI                              ;LIMPIA EL REGISTRO INDICE
+        XOR CX, CX                              ;LIMPIA EL REGISTRO DE CONTEO
+        XOR CX, 0040h
+        MOV AL, fileBuffer                      ;MUEVE EL PRIMER VALOR DEL BUFFER AL ACUMULADOR
+        SUB AL, 30H                             ;CONVIERTE EL SIMBOLO ASCII A UN NUMERO
+        MOV actTurn, AL                         ;ALOJA EL TURNO EN EL QUE SE QUEDÓ EL JUEGO
+        _loadGame:                              
+            MOV AL, fileBuffer[SI + 0001H]      ;MUEVE EL CONTENIDO DEL BUFFER AL ACUMULADOR
+            MOV LOGICM[SI], AL                  ;MUEVE EL CONTENIDO DEL ACUMULADOR A LA MATRIZ LOGICA
+            INC SI                              ;AUMENTA EL REGISTRO INDICE
+            LOOP _loadGame                      ;LOOP
+        JMP Play                                ;TERMINA EL PROCESO Y SALTA A Play
+        _loadErr4:                      
+            printStrln fileEr4                  ;INFORMA AL USUARIO QUE OCURRIÓ UN ERROR AL INTENTAR ABRIR EL ARCHIVO
+            JMP MainMenu
+        _loadErr5:
+            printStrln fileEr5                  ;INFORMA LA USUARIO QUE OCURRIÓ UN ERRROR AL INTENTAR LEER EL ARCHIVO
+            closeFile fileHandlerVar            ;INTENTA CERRAR EL ARCHIVO
+            JMP MainMenu
+    ExitPlay:
+        flushStr LOGICM, SIZEOF LOGICM, 20H ;LIMPIA EL ARREGLO LÓGICO DE POSICIONES
+        MOV actTurn, 01H                ;ESTABLECE EL TURNO PARA LAS NEGRAS
+        MOV ctPASS, 00H              ;LIMPIA EL VALOR DE ctPASS
+        JMP Header
     Exit:
         MOV AX, 4C00H
         XOR AL, AL
