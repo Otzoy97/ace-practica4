@@ -1,0 +1,145 @@
+/*BACKGROUND*/
+.tablero{
+    height: 500px;
+    width: 500px;
+    background-color: #F8DC88;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tablero div div{
+    height: 50px;
+    width: 50px;
+    border: solid;
+    border-width: 0.1px;
+}
+
+/*FIGURES #1 RIGHT*/
+.negro1{
+    fill: black;
+    height: 50px;
+    width: 50px;
+    margin-top: -25px;
+    margin-left: -25px;
+    position: absolute;
+}
+
+.blanco1{
+    fill: white;
+    height: 50px;
+    width: 50px;
+    margin-top: -25px;
+    margin-left: -25px;
+    position: absolute;
+}
+
+.square{
+    height: 50px;
+    width: 50px;
+    margin-top: -18px;
+    margin-left: -27px;
+    position: absolute;
+    fill:rgba(0, 0, 0, 0);
+    stroke:black;
+    stroke-width:2;
+}
+
+.cirque_out{
+    fill: rgba(0, 0, 0, 0);
+    stroke: black;
+    stroke-width: 2px;
+    height: 50px;
+    width: 50px;
+    margin-top: -24px;
+    margin-left: -24px;
+    position: absolute;
+}
+
+.triangle{
+    fill: rgba(0, 0, 0, 0);
+    stroke: black;
+    stroke-width: 2px;
+    height: 50px;
+    width: 50px;
+    margin-top: -35px;
+    margin-left: -28px;
+    position: absolute;
+}
+
+/*FIGURES #2 --LEFT*/
+.negro2{
+    fill: black;
+    height: 50px;
+    width: 50px;
+    margin-top: -25px;
+    margin-left: 25px;
+    position: absolute;
+}
+
+.blanco2{
+    fill: white;
+    height: 50px;
+    width: 50px;
+    margin-top: -25px;
+    margin-left: 25px;
+    position: absolute;
+}
+
+.square1{
+    height: 50px;
+    width: 50px;
+    margin-top: -18px;
+    margin-left: 23px;
+    position: absolute;
+    fill:rgba(0, 0, 0, 0);
+    stroke:black;
+    stroke-width:2;
+}
+
+.cirque_out1{
+    fill: rgba(0, 0, 0, 0);
+    stroke: black;
+    stroke-width: 2px;
+    height: 50px;
+    width: 50px;
+    margin-top: -24px;
+    margin-left: 26px;
+    position: absolute;
+}
+
+.triangle1{
+    fill: rgba(0, 0, 0, 0);
+    stroke: black;
+    stroke-width: 2px;
+    height: 50px;
+    width: 50px;
+    margin-top: -35px;
+    margin-left: 22px;
+    position: absolute;
+}
+
+/*TEXT*/
+.top{
+    position: absolute; 
+    margin-top: -55px;
+    margin-left: -5px;
+    font-size: 15px;
+    font-weight: bold; 
+}
+
+.top-left{
+    position: absolute; 
+    margin-top: -55px;
+    margin-left: 48px;
+    font-size: 15px;
+    font-weight: bold; 
+}
+
+.left{
+    position: absolute; 
+    margin-top: -10px;
+    margin-left: -55px;
+    font-size: 15px;
+    font-weight: bold; 
+}
