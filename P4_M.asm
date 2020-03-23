@@ -161,3 +161,12 @@ LOCAL _1
     printStrln fileEr3
     _1:
 ENDM
+
+readFile MACRO fileHandler, fileContent, fileSize
+    MOV AH, 3FH
+    MOV BX, fileHandler
+    MOV CX, fileSize
+    MOV DX, OFFSET fileContent
+    INT 21H
+    ;ESPECIFICAR ERROR
+ENDM
