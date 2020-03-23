@@ -1,1369 +1,1518 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /*BACKGROUND*/
+        .tablero {
+            height: 500px;
+            width: 500px;
+            background-color: #F8DC88;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tablero div div {
+            height: 50px;
+            width: 50px;
+            border: solid;
+            border-width: 0.1px;
+        }
+
+        /*FIGURES #1 RIGHT*/
+        .negro1 {
+            fill: black;
+            height: 50px;
+            width: 50px;
+            margin-top: -25px;
+            margin-left: -25px;
+            position: absolute;
+        }
+
+        .blanco1 {
+            fill: white;
+            height: 50px;
+            width: 50px;
+            margin-top: -25px;
+            margin-left: -25px;
+            position: absolute;
+        }
+
+        .square {
+            height: 50px;
+            width: 50px;
+            margin-top: -18px;
+            margin-left: -27px;
+            position: absolute;
+            fill: rgba(0, 0, 0, 0);
+            stroke: black;
+            stroke-width: 2;
+        }
+
+        .cirque_out {
+            fill: rgba(0, 0, 0, 0);
+            stroke: black;
+            stroke-width: 2px;
+            height: 50px;
+            width: 50px;
+            margin-top: -24px;
+            margin-left: -24px;
+            position: absolute;
+        }
+
+        .triangle {
+            fill: rgba(0, 0, 0, 0);
+            stroke: black;
+            stroke-width: 2px;
+            height: 50px;
+            width: 50px;
+            margin-top: -35px;
+            margin-left: -28px;
+            position: absolute;
+        }
+
+        /*FIGURES #2 --LEFT*/
+        .negro2 {
+            fill: black;
+            height: 50px;
+            width: 50px;
+            margin-top: -25px;
+            margin-left: 25px;
+            position: absolute;
+        }
+
+        .blanco2 {
+            fill: white;
+            height: 50px;
+            width: 50px;
+            margin-top: -25px;
+            margin-left: 25px;
+            position: absolute;
+        }
+
+        .square1 {
+            height: 50px;
+            width: 50px;
+            margin-top: -18px;
+            margin-left: 23px;
+            position: absolute;
+            fill: rgba(0, 0, 0, 0);
+            stroke: black;
+            stroke-width: 2;
+        }
+
+        .cirque_out1 {
+            fill: rgba(0, 0, 0, 0);
+            stroke: black;
+            stroke-width: 2px;
+            height: 50px;
+            width: 50px;
+            margin-top: -24px;
+            margin-left: 26px;
+            position: absolute;
+        }
+
+        .triangle1 {
+            fill: rgba(0, 0, 0, 0);
+            stroke: black;
+            stroke-width: 2px;
+            height: 50px;
+            width: 50px;
+            margin-top: -35px;
+            margin-left: 22px;
+            position: absolute;
+        }
+
+        /*TEXT*/
+        .top {
+            position: absolute;
+            margin-top: -55px;
+            margin-left: -5px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .top-left {
+            position: absolute;
+            margin-top: -55px;
+            margin-left: 48px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .left {
+            position: absolute;
+            margin-top: -10px;
+            margin-left: -55px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+    </style>
     <title>Juego</title>
 </head>
+
 <body>
 
-<div class="tablero">
-    
-    <div>
-    <p class="top">A</p>  
+    <div class="tablero">
 
         <div>
-            <p class="left">8</p>
+            <p class="top">A</p>
+
+            <div>
+                <p class="left">8</p>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+
+            </div>
+            <div>
+                <p class="left">7</p>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <p class="left">6</p>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <p class="left">5</p>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <p class="left">4</p>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <p class="left">3</p>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <p class="left">2</p>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <!-- FUERA DEL DIV -->
             <!-- Posicio 1 -->
+            <!-- Posicio 1 -->
+            <p class="left">1</p>
             <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
+                <circle cx="25" cy="25" r="20" />
             </svg>
             <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
+                <circle cx="25" cy="25" r="20" />
+            </svg>
+
             <svg class="triangle">
                 <polygon points="29,15 47,47 10,47">
             </svg>
             <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
+                <rect x="15" y="5" width="25" height="25" />
             </svg>
             <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
+                <circle cx="24" cy="24" r="19" />
             </svg>
             <!-- Posicio 2 -->
-            
+
 
         </div>
-        <div>
-            <p class="left">7</p>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <p class="left">6</p>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <p class="left">5</p>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <p class="left">4</p>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <p class="left">3</p>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <p class="left">2</p>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <!-- FUERA DEL DIV -->
-        <!-- Posicio 1 -->
-      <!-- Posicio 1 -->
-      <p class="left">1</p>
-      <svg class="negro1">
-        <circle cx="25" cy="25" r="20"/>
-        </svg>
-        <svg class="blanco1">
-            <circle cx="25" cy="25" r="20"/>
-        </svg> 
 
-        <svg class="triangle">
-            <polygon points="29,15 47,47 10,47">
-        </svg>
-        <svg class="square">
-            <rect x="15" y="5" width="25" height="25"/>
-        </svg>
-        <svg class=cirque_out>
-            <circle cx="24" cy="24" r="19"/>
-        </svg>
-        <!-- Posicio 2 -->
-        
-
-    </div>
-
-    <div>
-        <p class="top">B</p>  
         <div>
+            <p class="top">B</p>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <!-- FUERA DEL DIV -->
             <!-- Posicio 1 -->
+            <!-- Posicio 1 -->
+
             <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
+                <circle cx="25" cy="25" r="20" />
             </svg>
             <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
+                <circle cx="25" cy="25" r="20" />
+            </svg>
+
             <svg class="triangle">
                 <polygon points="29,15 47,47 10,47">
             </svg>
             <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
+                <rect x="15" y="5" width="25" height="25" />
             </svg>
             <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
+                <circle cx="24" cy="24" r="19" />
             </svg>
             <!-- Posicio 2 -->
-            
+
 
         </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <!-- FUERA DEL DIV -->
-        <!-- Posicio 1 -->
-      <!-- Posicio 1 -->
-      
-      <svg class="negro1">
-        <circle cx="25" cy="25" r="20"/>
-        </svg>
-        <svg class="blanco1">
-            <circle cx="25" cy="25" r="20"/>
-        </svg> 
 
-        <svg class="triangle">
-            <polygon points="29,15 47,47 10,47">
-        </svg>
-        <svg class="square">
-            <rect x="15" y="5" width="25" height="25"/>
-        </svg>
-        <svg class=cirque_out>
-            <circle cx="24" cy="24" r="19"/>
-        </svg>
-        <!-- Posicio 2 -->
-        
+        <div>
+            <p class="top">C</p>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
 
-    </div>
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
 
-    <div>
-        <p class="top">C</p>    
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
 
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <!-- FUERA DEL DIV -->
-        <!-- Posicio 1 -->
-      <!-- Posicio 1 -->
-      <svg class="negro1">
-        <circle cx="25" cy="25" r="20"/>
-        </svg>
-        <svg class="blanco1">
-            <circle cx="25" cy="25" r="20"/>
-        </svg> 
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
 
-        <svg class="triangle">
-            <polygon points="29,15 47,47 10,47">
-        </svg>
-        <svg class="square">
-            <rect x="15" y="5" width="25" height="25"/>
-        </svg>
-        <svg class=cirque_out>
-            <circle cx="24" cy="24" r="19"/>
-        </svg>
-        <!-- Posicio 2 -->
-        
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
 
-    </div>
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
 
-    <div>
-        <p class="top">D</p>    
-        <div>
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <!-- FUERA DEL DIV -->
+            <!-- Posicio 1 -->
             <!-- Posicio 1 -->
             <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
+                <circle cx="25" cy="25" r="20" />
             </svg>
             <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
+                <circle cx="25" cy="25" r="20" />
+            </svg>
+
             <svg class="triangle">
                 <polygon points="29,15 47,47 10,47">
             </svg>
             <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
+                <rect x="15" y="5" width="25" height="25" />
             </svg>
             <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
+                <circle cx="24" cy="24" r="19" />
             </svg>
             <!-- Posicio 2 -->
-            
+
 
         </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <!-- FUERA DEL DIV -->
-        <!-- Posicio 1 -->
-      <!-- Posicio 1 -->
-      <svg class="negro1">
-        <circle cx="25" cy="25" r="20"/>
-        </svg>
-        <svg class="blanco1">
-            <circle cx="25" cy="25" r="20"/>
-        </svg> 
 
-        <svg class="triangle">
-            <polygon points="29,15 47,47 10,47">
-        </svg>
-        <svg class="square">
-            <rect x="15" y="5" width="25" height="25"/>
-        </svg>
-        <svg class=cirque_out>
-            <circle cx="24" cy="24" r="19"/>
-        </svg>
-        <!-- Posicio 2 -->
-        
+        <div>
+            <p class="top">D</p>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
 
-    </div>
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
 
-    <div>
-        <p class="top">E</p>    
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
 
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <!-- FUERA DEL DIV -->
-        <!-- Posicio 1 -->
-      <!-- Posicio 1 -->
-      <svg class="negro1">
-        <circle cx="25" cy="25" r="20"/>
-        </svg>
-        <svg class="blanco1">
-            <circle cx="25" cy="25" r="20"/>
-        </svg> 
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
 
-        <svg class="triangle">
-            <polygon points="29,15 47,47 10,47">
-        </svg>
-        <svg class="square">
-            <rect x="15" y="5" width="25" height="25"/>
-        </svg>
-        <svg class=cirque_out>
-            <circle cx="24" cy="24" r="19"/>
-        </svg>
-        <!-- Posicio 2 -->
-        
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
 
-    </div>
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
 
-    <div>
-        <p class="top">F</p>    
-        <div>
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <!-- FUERA DEL DIV -->
+            <!-- Posicio 1 -->
             <!-- Posicio 1 -->
             <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
+                <circle cx="25" cy="25" r="20" />
             </svg>
             <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
+                <circle cx="25" cy="25" r="20" />
+            </svg>
+
             <svg class="triangle">
                 <polygon points="29,15 47,47 10,47">
             </svg>
             <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
+                <rect x="15" y="5" width="25" height="25" />
             </svg>
             <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
+                <circle cx="24" cy="24" r="19" />
             </svg>
             <!-- Posicio 2 -->
-            
+
 
         </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            
-        </div>
-        <!-- FUERA DEL DIV -->
-        <!-- Posicio 1 -->
-      <!-- Posicio 1 -->
-      <svg class="negro1">
-        <circle cx="25" cy="25" r="20"/>
-        </svg>
-        <svg class="blanco1">
-            <circle cx="25" cy="25" r="20"/>
-        </svg> 
 
-        <svg class="triangle">
-            <polygon points="29,15 47,47 10,47">
-        </svg>
-        <svg class="square">
-            <rect x="15" y="5" width="25" height="25"/>
-        </svg>
-        <svg class=cirque_out>
-            <circle cx="24" cy="24" r="19"/>
-        </svg>
-        <!-- Posicio 2 -->
-        
-
-    </div>
-
-    <div>
-        <p class="top">G</p>  
-        <p class="top-left">B</p>  
         <div>
+            <p class="top">E</p>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <!-- FUERA DEL DIV -->
+            <!-- Posicio 1 -->
             <!-- Posicio 1 -->
             <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
+                <circle cx="25" cy="25" r="20" />
             </svg>
             <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
+                <circle cx="25" cy="25" r="20" />
+            </svg>
+
             <svg class="triangle">
                 <polygon points="29,15 47,47 10,47">
             </svg>
             <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
+                <rect x="15" y="5" width="25" height="25" />
             </svg>
             <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
+                <circle cx="24" cy="24" r="19" />
+            </svg>
+            <!-- Posicio 2 -->
+
+
+        </div>
+
+        <div>
+            <p class="top">F</p>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+
+            </div>
+            <!-- FUERA DEL DIV -->
+            <!-- Posicio 1 -->
+            <!-- Posicio 1 -->
+            <svg class="negro1">
+                <circle cx="25" cy="25" r="20" />
+            </svg>
+            <svg class="blanco1">
+                <circle cx="25" cy="25" r="20" />
+            </svg>
+
+            <svg class="triangle">
+                <polygon points="29,15 47,47 10,47">
+            </svg>
+            <svg class="square">
+                <rect x="15" y="5" width="25" height="25" />
+            </svg>
+            <svg class=cirque_out>
+                <circle cx="24" cy="24" r="19" />
+            </svg>
+            <!-- Posicio 2 -->
+
+
+        </div>
+
+        <div>
+            <p class="top">G</p>
+            <p class="top-left">H</p>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+                <svg class="negro2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle1">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square1">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out1>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+                <svg class="negro2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle1">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square1">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out1>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+                <svg class="negro2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle1">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square1">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out1>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+                <svg class="negro2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle1">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square1">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out1>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+                <svg class="negro2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle1">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square1">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out1>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+                <svg class="negro2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle1">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square1">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out1>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+
+            </div>
+            <div>
+                <!-- Posicio 1 -->
+                <svg class="negro1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco1">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+                <!-- Posicio 2 -->
+                <svg class="negro2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+                <svg class="blanco2">
+                    <circle cx="25" cy="25" r="20" />
+                </svg>
+
+                <svg class="triangle1">
+                    <polygon points="29,15 47,47 10,47">
+                </svg>
+                <svg class="square1">
+                    <rect x="15" y="5" width="25" height="25" />
+                </svg>
+                <svg class=cirque_out1>
+                    <circle cx="24" cy="24" r="19" />
+                </svg>
+
+            </div>
+            <!-- FUERA DEL DIV -->
+            <!-- Posicio 1 -->
+            <!-- Posicio 1 -->
+            <svg class="negro1">
+                <circle cx="25" cy="25" r="20" />
+            </svg>
+            <svg class="blanco1">
+                <circle cx="25" cy="25" r="20" />
+            </svg>
+
+            <svg class="triangle">
+                <polygon points="29,15 47,47 10,47">
+            </svg>
+            <svg class="square">
+                <rect x="15" y="5" width="25" height="25" />
+            </svg>
+            <svg class=cirque_out>
+                <circle cx="24" cy="24" r="19" />
             </svg>
             <!-- Posicio 2 -->
             <svg class="negro2">
-                <circle cx="25" cy="25" r="20"/>
+                <circle cx="25" cy="25" r="20" />
             </svg>
             <svg class="blanco2">
-                <circle cx="25" cy="25" r="20"/>
+                <circle cx="25" cy="25" r="20" />
             </svg>
-            
+
             <svg class="triangle1">
                 <polygon points="29,15 47,47 10,47">
             </svg>
             <svg class="square1">
-                <rect x="15" y="5" width="25" height="25"/>
+                <rect x="15" y="5" width="25" height="25" />
             </svg>
             <svg class=cirque_out1>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-    
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            <svg class="negro2">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco2">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            
-            <svg class="triangle1">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square1">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out1>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            <svg class="negro2">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco2">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            
-            <svg class="triangle1">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square1">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out1>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            <svg class="negro2">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco2">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            
-            <svg class="triangle1">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square1">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out1>
-                <circle cx="24" cy="24" r="19"/>
+                <circle cx="24" cy="24" r="19" />
             </svg>
 
         </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            <svg class="negro2">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco2">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            
-            <svg class="triangle1">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square1">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out1>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            <svg class="negro2">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco2">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            
-            <svg class="triangle1">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square1">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out1>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            
-        </div>
-        <div>
-            <!-- Posicio 1 -->
-            <svg class="negro1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco1">
-                <circle cx="25" cy="25" r="20"/>
-            </svg> 
-    
-            <svg class="triangle">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            <!-- Posicio 2 -->
-            <svg class="negro2">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            <svg class="blanco2">
-                <circle cx="25" cy="25" r="20"/>
-            </svg>
-            
-            <svg class="triangle1">
-                <polygon points="29,15 47,47 10,47">
-            </svg>
-            <svg class="square1">
-                <rect x="15" y="5" width="25" height="25"/>
-            </svg>
-            <svg class=cirque_out1>
-                <circle cx="24" cy="24" r="19"/>
-            </svg>
-            
-        </div>
-        <!-- FUERA DEL DIV -->
-        <!-- Posicio 1 -->
-      <!-- Posicio 1 -->
-      <svg class="negro1">
-        <circle cx="25" cy="25" r="20"/>
-        </svg>
-        <svg class="blanco1">
-            <circle cx="25" cy="25" r="20"/>
-        </svg> 
-
-        <svg class="triangle">
-            <polygon points="29,15 47,47 10,47">
-        </svg>
-        <svg class="square">
-            <rect x="15" y="5" width="25" height="25"/>
-        </svg>
-        <svg class=cirque_out>
-            <circle cx="24" cy="24" r="19"/>
-        </svg>
-        <!-- Posicio 2 -->
-        <svg class="negro2">
-            <circle cx="25" cy="25" r="20"/>
-        </svg>
-        <svg class="blanco2">
-            <circle cx="25" cy="25" r="20"/>
-        </svg>
-        
-        <svg class="triangle1">
-            <polygon points="29,15 47,47 10,47">
-        </svg>
-        <svg class="square1">
-            <rect x="15" y="5" width="25" height="25"/>
-        </svg>
-        <svg class=cirque_out1>
-            <circle cx="24" cy="24" r="19"/>
-        </svg>
 
     </div>
-        
-</div>
 </body>
+
 </html>

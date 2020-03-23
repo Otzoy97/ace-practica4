@@ -1,4 +1,5 @@
 include P4_M.asm
+.186
 .model small
 ;--------------------------------------
 ; STACK SEGMENT
@@ -29,6 +30,34 @@ fileEr3 db "    -- NO SE PUDO CERRAR EL ARCHIVO --$"
 fileEr4 db "    -- NO SE PUDO ABRIR EL ARCHIVO --$"
 fileEr5 db "    -- NO SE PUDO LEER EL ARCHIVO --$"
 fileSc1 db "    -- !JUEGO CARGADO CON EXITO", 0ADH," --$"
+
+html1   db    "<!DOCTYPE html>", 0ah, 0dh
+        db    "<html lang=", 22H, "en", 22H, ">", 0ah, 0dh
+        db    "<head>", 0ah, 0dh
+        db    "    <meta charset=", 22H, "UTF-8", 22H, ">", 0ah, 0dh
+        db    "    <meta name=", 22H, "viewport", 22H, " content=", 22H, "width=device-width, initial-scale=1.0", 22H, ">", 0ah, 0dh
+        db    "    <style>", 0ah, 0dh
+        db    "        .tablero { height: 500px; width: 500px; background-color: #F8DC88; display: flex; justify-content: center; align-items: center; }", 0ah, 0dh
+        db    "       .tablero div div { height: 50px; width: 50px; border: solid; border-width: 0.1px; }", 0ah, 0dh
+        db    "       .negro1 { fill: black; height: 50px; width: 50px; margin-top: -25px; margin-left: -25px; position: absolute; }", 0ah, 0dh
+        db    "       .blanco1 { fill: white; height: 50px; width: 50px; margin-top: -25px; margin-left: -25px; position: absolute; }", 0ah, 0dh
+        db    "       .square { height: 50px; width: 50px; margin-top: -18px; margin-left: -27px; position: absolute; fill: rgba(0, 0, 0, 0); stroke: black; stroke-width: 2; }", 0ah, 0dh
+        db    "       .cirque_out { fill: rgba(0, 0, 0, 0); stroke: black; stroke-width: 2px; height: 50px; width: 50px; margin-top: -24px; margin-left: -24px; position: absolute; }", 0ah, 0dh
+        db    "       .triangle { fill: rgba(0, 0, 0, 0); stroke: black; stroke-width: 2px; height: 50px; width: 50px; margin-top: -35px; margin-left: -28px; position: absolute; }", 0ah, 0dh
+        db    "       .negro2 { fill: black; height: 50px; width: 50px; margin-top: -25px; margin-left: 25px; position: absolute; }", 0ah, 0dh
+        db    "       .blanco2 { fill: white; height: 50px; width: 50px; margin-top: -25px; margin-left: 25px; position: absolute; }", 0ah, 0dh
+        db    "       .square1 { height: 50px; width: 50px; margin-top: -18px; margin-left: 23px; position: absolute; fill: rgba(0, 0, 0, 0); stroke: black; stroke-width: 2; }", 0ah, 0dh
+        db    "       .cirque_out1 { fill: rgba(0, 0, 0, 0); stroke: black; stroke-width: 2px; height: 50px; width: 50px; margin-top: -24px; margin-left: 26px; position: absolute; }", 0ah, 0dh
+        db    "       .triangle1 { fill: rgba(0, 0, 0, 0); stroke: black; stroke-width: 2px; height: 50px; width: 50px; margin-top: -35px; margin-left: 22px; position: absolute; }", 0ah, 0dh
+        db    "       .top { position: absolute; margin-top: -55px; margin-left: -5px; font-size: 15px; font-weight: bold; }", 0ah, 0dh
+        db    "       .top-left { position: absolute; margin-top: -55px; margin-left: 48px; font-size: 15px; font-weight: bold; }", 0ah, 0dh
+        db    "       .left {position: absolute; margin-top: -10px;margin-left: -55px;font-size: 15px;font-weight: bold; }", 0ah, 0dh
+        db    "    </style>", 0ah, 0dh
+        db    "    <title>Juego</title>", 0ah, 0dh
+        db    "</head>", 0ah, 0dh
+        db    "<body>"
+
+
 ;------------ BOARD PRINT -------------
 STREET  db 0BAH, "   $"
 AVENUE  db " ", 0CDH," $"
@@ -46,16 +75,18 @@ EXITWD  db "3$"
 ;--------------------------------------
 ;--------------- VOLATILE -------------
 ;--------------------------------------
-LOGICM  db 64 DUP(20H)     ;ARREGLO DE 64 POSICIONES QUE SIMULAN UNA MATRIZ DE 2X2
-ctAVNE  db 38h             ;CARACTER DE '8' 
-ctLTTR  db 41h             ;CARACTER DE 'A'
-actTurn db 1H              ;0 BLANCAS, 1 NEGRAS, SERVIRÁ PARA DETERMINAR EL TURNO ACTUAL
-ctPASS  db 0H              ;CONTADOR PARA EL NÚMERO DE VECES QUE SE UTILIZA PASS
+LOGICM      db 64 DUP(20H)     ;ARREGLO DE 64 POSICIONES QUE SIMULAN UNA MATRIZ DE 2X2
+ctAVNE      db 38h             ;CARACTER DE '8' 
+ctLTTR      db 41h             ;CARACTER DE 'A'
+actTurn     db 1H              ;0 BLANCAS, 1 NEGRAS, SERVIRÁ PARA DETERMINAR EL TURNO ACTUAL
+ctPASS      db 0H              ;CONTADOR PARA EL NÚMERO DE VECES QUE SE UTILIZA PASS
 coinOption  db 6  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE MIENTRAS ESTÉ JUGANDO
 optionMsg   db 6  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE EN EL MENÚ PRINCIPAL
 fileBuffer  db 66 DUP('$') ;ALOJARÁ EL CONTENIDO DEL ARCHIVO
 fileName    db 50 DUP('$')  ;ALOJARÁ EL NOMBRE DEL ARCHIVO
 fileHandlerVar dw ?            ;
+date        db "00/00/0000 - "
+time        db "00:00:00"
 ;--------------------------------------
 ; CODE SEGMENT
 ;--------------------------------------
@@ -77,32 +108,32 @@ main proc
         JE Exit
         JMP MainMenu
     Play:
-        CMP actTurn, 01H                    ;DETERMINA DE QUIÉN ES EL TURNO
-        JNE _printWhite                     ;NO ES IGUAL A 1,
-        printStr trnMsg1                    ;ES IGUAL A 1, ENTONCES ES EL TURNO DE LAS NEGRAS
-        JMP _play1                          ;SIGUE EL CURSO DE LA SECCIÓN PLAY
+        CMP actTurn, 01H                        ;DETERMINA DE QUIÉN ES EL TURNO
+        JNE _printWhite                         ;NO ES IGUAL A 1,
+        printStr trnMsg1                        ;ES IGUAL A 1, ENTONCES ES EL TURNO DE LAS NEGRAS
+        JMP _play1                              ;SIGUE EL CURSO DE LA SECCIÓN PLAY
         _printWhite:
-            printStr trnMsg2                ;ENTONCES ES EL TURNO DE LAS BLANCAS
+            printStr trnMsg2                    ;ENTONCES ES EL TURNO DE LAS BLANCAS
         _play1:
             flushStr coinOption, SIZEOF coinOption, 00H
-            getLine coinOption              ;RECUPERA LA OPCIÓN DEL USUARIO
-            XOR AX, AX                      ;LIMPIA EL ACUMULADOR
-            CMP coinOption[0], 61H          
-            JB _upper                       ;CODIGO ASCII ES MENOR A 'a'
-            CMP coinOption[0], 68H          
-            JBE _digit                      ;CODIGO ASCII ES MENOR O IGUAL A 'h'
-            JMP _play2                      ;CODIGO ASCII ES MAYOR A 'h'
+            getLine coinOption                  ;RECUPERA LA OPCIÓN DEL USUARIO
+            XOR AX, AX                          ;LIMPIA EL ACUMULADOR
+            CMP coinOption[0], 'a'          
+            JB _upper                           ;CODIGO ASCII ES MENOR A 'a'
+            CMP coinOption[0], 'h'          
+            JBE _digit                          ;CODIGO ASCII ES MENOR O IGUAL A 'h'
+            JMP _play2                          ;CODIGO ASCII ES MAYOR A 'h'
         _upper:
-            CMP coinOption[0], 41H
-            JB _play2                       ;CODIGO ASCII ES MENOR A 'A'
-            CMP coinOption[0], 48H
-            JA _play2                       ;CODIGO ASCII ES MAYOR A 'H'
-            ADD coinOption[0], 20H          ;SUMA CODIGO 32h para lograr una minúscula
+            CMP coinOption[0], 'A'
+            JB _play2                           ;CODIGO ASCII ES MENOR A 'A'
+            CMP coinOption[0], 'H'
+            JA _play2                           ;CODIGO ASCII ES MAYOR A 'H'
+            ADD coinOption[0], 20H              ;SUMA CODIGO 32 para lograr una minúscula
         _digit:
-            CMP coinOption[1], 31H
-            JB _play2                       ;CODIGO ASCII ES MENOR A '1'
-            CMP coinOption[1], 38H
-            JBE _play3                      ;CODIGO ASCII ES MENOR O IGUAL A '8'
+            CMP coinOption[1], '1'
+            JB _play2                           ;CODIGO ASCII ES MENOR A '1'
+            CMP coinOption[1], '8'
+            JBE _play3                          ;CODIGO ASCII ES MENOR O IGUAL A '8'
         _play2:
             toLower coinOption
             compareStr coinOption, PASSrw
@@ -115,109 +146,113 @@ main proc
             JE ExitPlay
             JMP Play
         _play3:
-            SUB coinOption[0], 61H      ;OBTIENE UN ÍNDICE DE COLUMNA, BASE 0 => coinOption[0] <- coinOption[0] - 61H
-            MOV AL, 38H                 ;MUEVE UN OCHO ASCII AL ACUMULADOR-L, (PARA LUEGO MULTIPLICARLO) => AL <- 38H
-            SUB AL, coinOption[1]       ;OBTIENE UN ÍNDICE DE FILA, BASE 0 => AL <- AL - coinOption[1]
-            XOR BL, BL
-            MOV BL, 08H
-            MUL BL                      ;MULTIPLICA POR OCHO (EL NÚMERO DE COLUMNAS) 
-            ADD AL, coinOption[0]       ;SUMA LA COLUMNA
-            MOV BX, AX                  ;MUEVE EL RESULTADO A UN REGISTRO BASE
-            CMP actTurn, 01H            ;¿TURNO?
-            JNE _playwhite              ;TURNO DE BLANCAS
-            MOV LOGICM[BX], 4EH         ;GUARDA FICHA NEGRA
-            DEC actTurn                 ;ASIGNA TURNO A BLANCA
-            JMP BoardPrint              ;IMPRIME TABLERO
+            SUB coinOption[0], 61H              ;OBTIENE UN ÍNDICE DE COLUMNA, BASE 0 => coinOption[0] <- coinOption[0] - 61H
+            MOV AL, 38H                         ;MUEVE UN OCHO ASCII AL ACUMULADOR-L, (PARA LUEGO MULTIPLICARLO) => AL <- 38H
+            SUB AL, coinOption[1]               ;OBTIENE UN ÍNDICE DE FILA, BASE 0 => AL <- AL - coinOption[1]
+            XOR AH, AH                          ;LIMPIA AH
+            SHL AX, 3                           ;MULTIPLICA POR OCHO
+            ADD AL, coinOption[0]               ;SUMA LA COLUMNA
+            MOV BX, AX                          ;MUEVE EL RESULTADO A UN REGISTRO BASE
+            CMP LOGICM[BX], 20H                 ;COMPARA SI LA POSICION ES IGUAL A UN ESPACIO
+            JE _play4                           ;ES UN ESPACIO DISPONIBLE
+            printStrln coinEr3                  ;INFORMA AL USUARIO QUE ESA POSICIÓN YA ESTÁ OCUPADA
+            JMP Play                            ;REGRESA AL FLUJO DE PLAY
+        _play4:
+            CMP actTurn, 01H                    ;¿TURNO?
+            JNE _playwhite                      ;TURNO DE BLANCAS
+            MOV LOGICM[BX], 4EH                 ;GUARDA FICHA NEGRA
+            DEC actTurn                         ;ASIGNA TURNO A BLANCA
+            JMP BoardPrint                      ;IMPRIME TABLERO
         _playwhite:
-            MOV LOGICM[BX], 42H         ;GUARDA FICHA BLANCA
-            INC actTurn                 ;ASIGNA TURNO A NEGRA
+            MOV LOGICM[BX], 42H                 ;GUARDA FICHA BLANCA
+            INC actTurn                         ;ASIGNA TURNO A NEGRA
     BoardPrint:
         XOR SI, SI
         _loopBoardPrint:
             CMP ctAVNE, 30H
-            JE _stopBoardPrint          ;TERMINA EL LOOP
+            JE _stopBoardPrint                  ;TERMINA EL LOOP
             printChar ctAVNE
-            printStr SPCS2              ;IMPRIME DOS ESPACIOS (AH CAMBIÓ)
-            printChar LOGICM[SI]        ;IMPRIME EL CARACTER ALMACENADO EN LA MATRIZ
-            INC SI                      ;INCREMENTA EL REGISTRO INDICE
+            printStr SPCS2                      ;IMPRIME DOS ESPACIOS (AH CAMBIÓ)
+            printChar LOGICM[SI]                ;IMPRIME EL CARACTER ALMACENADO EN LA MATRIZ
+            INC SI                              ;INCREMENTA EL REGISTRO INDICE
             XOR CX, CX
             MOV CX, 07H
             _loopAvenuePrint:
-                printStr AVENUE         ;IMPRIME EL CARACTER QUE SEPARADOR HORIZONTAL
-                printChar LOGICM[SI]    ;IMPRIME EL CARACTER ALMACENADO EN LA MATRIZ
-                INC SI                  ;INCREMENTA EL REGISTRO INDICE
+                printStr AVENUE                 ;IMPRIME EL CARACTER QUE SEPARADOR HORIZONTAL
+                printChar LOGICM[SI]            ;IMPRIME EL CARACTER ALMACENADO EN LA MATRIZ
+                INC SI                          ;INCREMENTA EL REGISTRO INDICE
                 LOOP _loopAvenuePrint
-            printStrln ln               ;IMRPIME UNA NUEVA LINEA
-            printStr SPCS3              ;IMPRIME TRES ESPACIOS
-            XOR CX, CX                  ;INICIALIZA EL REGISTRO DE CONTEO
+            printStrln ln                       ;IMRPIME UNA NUEVA LINEA
+            printStr SPCS3                      ;IMPRIME TRES ESPACIOS
+            XOR CX, CX                          ;INICIALIZA EL REGISTRO DE CONTEO
             MOV CX, 08H             
-            CMP ctAVNE, 31H             ;DETERMINA SI ctAVNE ES IGUAL A '1'
-            JE _loopFootBoard           ;ES IGUAL A '1', NO DEBE IMPRIMIR LOS SEPARADORES VERTICALES
+            CMP ctAVNE, 31H                     ;DETERMINA SI ctAVNE ES IGUAL A '1'
+            JE _loopFootBoard                   ;ES IGUAL A '1', NO DEBE IMPRIMIR LOS SEPARADORES VERTICALES
             _loopStreetPrint:       
-                printStr STREET         ;IMPRIME LOS SEPARADORES VERTICALES
+                printStr STREET                 ;IMPRIME LOS SEPARADORES VERTICALES
                 LOOP _loopStreetPrint
-            JMP _loopDecAVNE            ;SE MUEVE A LA SIG INSTRUCCION
+            JMP _loopDecAVNE                    ;SE MUEVE A LA SIG INSTRUCCION
             _loopFootBoard:             
-                printChar ctLTTR        ;IMPRIME A, B, C, D, E, F, G o H
-                printStr SPCS3          ;IMPRIME TRES ESPACIOS
-                INC ctLTTR              ;AUMENTA LA VARIABLE QUE ALMACENA EL CODIGO ASCII DE LAS LETRAS
+                printChar ctLTTR                ;IMPRIME A, B, C, D, E, F, G o H
+                printStr SPCS3                  ;IMPRIME TRES ESPACIOS
+                INC ctLTTR                      ;AUMENTA LA VARIABLE QUE ALMACENA EL CODIGO ASCII DE LAS LETRAS
                 LOOP _loopFootBoard
             _loopDecAVNE:               
-                printStrln ln           ;IMPRIME UNA NUEVA LINEA
-                DEC ctAVNE              ;DECREMENTA EL CONTADOR DE FILAS
-                JMP _loopBoardPrint     ;SALTA A LA SIG INSTRUCCIÓN
+                printStrln ln                   ;IMPRIME UNA NUEVA LINEA
+                DEC ctAVNE                      ;DECREMENTA EL CONTADOR DE FILAS
+                JMP _loopBoardPrint             ;SALTA A LA SIG INSTRUCCIÓN
         _stopBoardPrint:
-            MOV ctAVNE, 38h             ;REINICIA LA VARIABLE QUE CONTROLA EL CONTADOR DE FILAS
-            MOV ctLTTR, 41h             ;REINICIA LA VARIABLE QUE CONTROLA EL CODIGO ASCII DE LAS LSETRAS (VER _loopFootBoard)
-            JMP Play                    ;REGRESA AL CICLO DE PLAY
+            MOV ctAVNE, 38h                     ;REINICIA LA VARIABLE QUE CONTROLA EL CONTADOR DE FILAS
+            MOV ctLTTR, 41h                     ;REINICIA LA VARIABLE QUE CONTROLA EL CODIGO ASCII DE LAS LSETRAS (VER _loopFootBoard)
+            JMP Play                            ;REGRESA AL CICLO DE PLAY
     Pass:
-        INC ctPASS                      ;INCREMENTA EL CONTADOR
+        INC ctPASS                              ;INCREMENTA EL CONTADOR
         CMP ctPASS, 02H
         JNE _passTurn
-        flushStr LOGICM, SIZEOF LOGICM, 20H ;LIMPIA EL ARREGLO LÓGICO DE POSICIONES
-        MOV actTurn, 01H                ;ESTABLECE EL TURNO PARA LAS NEGRAS
-        MOV ctPASS, 00H                 ;LIMPIA EL VALOR DE ctPASS
+        flushStr LOGICM, SIZEOF LOGICM, 20H     ;LIMPIA EL ARREGLO LÓGICO DE POSICIONES
+        MOV actTurn, 01H                        ;ESTABLECE EL TURNO PARA LAS NEGRAS
+        MOV ctPASS, 00H                         ;LIMPIA EL VALOR DE ctPASS
         JMP Header
         _passTurn:
             CMP actTurn, 01H
             JNE _whiteTurn
-            DEC actTurn                     ;DISMINUYE actTurn, ESO HARÁ QUE SEA EL TURNO DE LAS BLANCAS
-            JMP Play                        ;REGRESA A LA SECCIÓN DE JUEGO
+            DEC actTurn                         ;DISMINUYE actTurn, ESO HARÁ QUE SEA EL TURNO DE LAS BLANCAS
+            JMP Play                            ;REGRESA A LA SECCIÓN DE JUEGO
         _whiteTurn:
-            INC actTurn                     ;INCREMENTA actTurn, ESO HARÁ QUE SEA EL TURNO DE LAS NEGRAS
-            JMP Play                        ;REGRESA A LA SECCIÓN DE JUEGO
+            INC actTurn                         ;INCREMENTA actTurn, ESO HARÁ QUE SEA EL TURNO DE LAS NEGRAS
+            JMP Play                            ;REGRESA A LA SECCIÓN DE JUEGO
     Save:
-        XOR SI, SI                          ;LIMPIA EL INDICE
-        XOR CX, CX                          ;LIMPIA EL CONTEO
-        MOV CX, 0040H                       ;INICIALIZA EL CONTEO (64)
-        MOV AL, actTurn                     ;ALOJA EL TURNO ACTUAL
-        ADD AL, 30H                         ;CONVIERTE EL NUMERO EN UN CÓDIGO ASCII RECONOCIBLE
-        MOV fileBuffer, AL              ;ALMACENA EL CODIGO ASCII
+        XOR SI, SI                              ;LIMPIA EL INDICE
+        XOR CX, CX                              ;LIMPIA EL CONTEO
+        MOV CX, 0040H                           ;INICIALIZA EL CONTEO (64)
+        MOV AL, actTurn                         ;ALOJA EL TURNO ACTUAL
+        ADD AL, 30H                             ;CONVIERTE EL NUMERO EN UN CÓDIGO ASCII RECONOCIBLE
+        MOV fileBuffer, AL                      ;ALMACENA EL CODIGO ASCII
         _loopCreateBuffer:          
-            MOV AL, LOGICM[SI]              ;MUEVE EL VALOR DE LOGICM AL ACUMULADOR
-            MOV fileBuffer[SI+0001H], AL ;MUEVE EL ACUMULADOR AL BUFFER DE CONTENIDO DE ARCHIVO
-            INC SI                          ;INCREMENTA EL INDICE
+            MOV AL, LOGICM[SI]                  ;MUEVE EL VALOR DE LOGICM AL ACUMULADOR
+            MOV fileBuffer[SI+0001H], AL        ;MUEVE EL ACUMULADOR AL BUFFER DE CONTENIDO DE ARCHIVO
+            INC SI                              ;INCREMENTA EL INDICE
             LOOP _loopCreateBuffer
-        printStrln svAsMsg                  ;SOLICITA EL NOMBRE DEL ARCHIVO
+        printStrln svAsMsg                      ;SOLICITA EL NOMBRE DEL ARCHIVO
         flushStr fileName, SIZEOF fileName, 00H
-        getLine fileName              ;RECUPERA EL NOMBRE DEL ARCHIVO
-        createFile fileName           ;CREA EL ARCHIVO
-        JC _err1ToPlay                      ;EXISTIÓ UN ERROR
-        MOV fileHandlerVar, AX              ;ALMACENA EL HANDLER
+        getLine fileName                        ;RECUPERA EL NOMBRE DEL ARCHIVO
+        createFile fileName                     ;CREA EL ARCHIVO
+        JC _err1ToPlay                          ;EXISTIÓ UN ERROR
+        MOV fileHandlerVar, AX                  ;ALMACENA EL HANDLER
         writeFile fileHandlerVar, fileBuffer, 41H ;ESCRIBE EN EL ARCHIVO
-        JC _err2ToPlay                      ;EXISTIÓ UN ERROR
-        printStrln svRsMsg                  ;ARCHIVO CORRRECTAMENTE ESCRITO
-        closeFile fileHandlerVar            ;CIERRA EL ARCHIVO
-        JMP Play                            ;REGRESA AL FLUJO DEL JUEGO
+        JC _err2ToPlay                          ;EXISTIÓ UN ERROR
+        printStrln svRsMsg                      ;ARCHIVO CORRRECTAMENTE ESCRITO
+        closeFile fileHandlerVar                ;CIERRA EL ARCHIVO
+        JMP Play                                ;REGRESA AL FLUJO DEL JUEGO
         _err1ToPlay:                        
-            printStrln fileEr1              ;NO SE PUDO CREAR EL ARCHIVO
-            JMP Play                        ;REGRESA AL FLUJO DEL JUEGO
+            printStrln fileEr1                  ;NO SE PUDO CREAR EL ARCHIVO
+            JMP Play                            ;REGRESA AL FLUJO DEL JUEGO
         _err2ToPlay:
-            printStrln fileEr2              ;NO SE PUDO ESCRIBIR EN EL ARCHIVO
-            closeFile fileHandlerVar        ;INTENTA CERRAR EL ARCHIVO
-            JMP Play                        ;REGRESA AL FLUJO DEL JUEGO
+            printStrln fileEr2                  ;NO SE PUDO ESCRIBIR EN EL ARCHIVO
+            closeFile fileHandlerVar            ;INTENTA CERRAR EL ARCHIVO
+            JMP Play                            ;REGRESA AL FLUJO DEL JUEGO
     Load:
-        printStrln loadMsg                  ;INFORMA AL USUARIO QUE INGRESE EL NOMBRE DEL ARCHIVO
+        printStrln loadMsg                      ;INFORMA AL USUARIO QUE INGRESE EL NOMBRE DEL ARCHIVO
         flushStr fileName, SIZEOF fileName, 00H ;LIMPIA LA CADENA EN LA QUE SE ALMACENARÁ EL NOMBRE DEL ARCHIVO
         getLine fileName                        ;RECUPERA EL NOMBRE DEL ARCHIVO
         openFile fileName, fileHandlerVar       ;INTENTA ABRIR EL ARCHIVO 
@@ -253,7 +288,53 @@ main proc
         JMP Header
     Exit:
         MOV AX, 4C00H
-        XOR AL, AL
         INT 21H
 main endp
+
+getDate PROC
+	MOV AH, 04H
+	INT 1AH
+	MOV BX, OFFSET DATE
+	MOV AL, DL
+	CALL toASCII
+	INC BX
+	MOV AL, DH	
+	CALL toASCII
+	INC BX
+	MOV AL, CH
+	CALL toASCII
+	MOV AL, CL
+	CALL toASCII
+	RET
+getDate ENDP
+
+getTime PROC
+	MOV AH, 02H
+	INT 1AH
+	MOV BX, OFFSET TIME
+	MOV AL, CH
+	CALL toASCII
+	INC BX
+	MOV AL, CL
+	CALL toASCII
+	INC BX
+	MOV AL, DH
+	CALL toASCII
+	RET
+getTime ENDP
+
+toASCII PROC
+	PUSH AX
+	SHR AX, 4
+	AND AX, 0FH
+	ADD AX, '0'
+	MOV [BX], AL
+	INC BX
+	POP AX
+	AND AX, 0FH
+	ADD AX, '0'
+	MOV [BX], AL
+	INC BX
+	RET
+toASCII ENDP
 end main
