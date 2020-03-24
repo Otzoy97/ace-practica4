@@ -30,7 +30,7 @@ fileEr3 db "    -- NO SE PUDO CERRAR EL ARCHIVO --$"
 fileEr4 db "    -- NO SE PUDO ABRIR EL ARCHIVO --$"
 fileEr5 db "    -- NO SE PUDO LEER EL ARCHIVO --$"
 fileSc1 db "    -- !JUEGO CARGADO CON EXITO", 0ADH," --$"
-
+fileSc2 db "    -- REPORTE GENERADO EXITOSAMENTE --$"
 html1   db    "<!DOCTYPE html>", 0ah, 0dh
         db    "<html lang=", 22H, "en", 22H, ">", 0ah, 0dh
         db    "<head>", 0ah, 0dh
@@ -55,8 +55,22 @@ html1   db    "<!DOCTYPE html>", 0ah, 0dh
         db    "    </style>", 0ah, 0dh
         db    "    <title>Juego</title>", 0ah, 0dh
         db    "</head>", 0ah, 0dh
-        db    "<body>"
+        db    "<body>",0ah, 0dh
+        db    "<div class=", 22H, "tablero", 22H, ">",0ah, 0dh,"$"
 
+circle  db    "<circle cx=" , 22H, "25" , 22H, " cy=" , 22H, "25" , 22H, " r=" , 22H, "20" , 22H, " />",0ah, 0dh,"</svg>$"
+htmlN1  db    "<svg class=" , 22H, "negro1" , 22H, ">",0ah, 0dh,"$"
+htmlB1  db    "<svg class=" , 22H, "blanco1" , 22H, ">",0ah, 0dh,"$"
+divo    db    "<div>",0ah, 0dh,"$"
+divc    db    "</div>",0ah, 0dh,"$"
+pltter1 db    "<p class=", 22H, "top", 22H, "> </p>",0ah, 0dh,"$"
+pltter2 db    "<p class=", 22H, "top-left", 22H, "> </p>",0ah, 0dh,"$"
+pnmber1 db    "<p class=", 22H, "left", 22H, "> </p>",0ah, 0dh,"$"
+htmlN2  db    "<svg class=" , 22H, "negro2" , 22H, ">",0ah, 0dh,"$"
+htmlB2  db    "<svg class=" , 22H, "blanco2" , 22H, ">",0ah, 0dh,"$"
+htmlend db    "</body></html>",0ah, 0dh,"$"
+RepName db    "rep .html", 00h
+RepCte  db    'a'
 
 ;------------ BOARD PRINT -------------
 STREET  db 0BAH, "   $"
@@ -85,8 +99,10 @@ optionMsg   db 6  DUP('$') ;ALOJARÁ LA OPCIÓN QUE EL USUARIO INGRESE EN EL MEN
 fileBuffer  db 66 DUP('$') ;ALOJARÁ EL CONTENIDO DEL ARCHIVO
 fileName    db 50 DUP('$')  ;ALOJARÁ EL NOMBRE DEL ARCHIVO
 fileHandlerVar dw ?            ;
-date        db "00/00/0000 - "
-time        db "00:00:00"
+date        db "00/00/0000 - $"
+time        db "00:00:00$"
+ctRep1      db ?
+ctRep2      db ?
 ;--------------------------------------
 ; CODE SEGMENT
 ;--------------------------------------
@@ -138,12 +154,12 @@ main proc
             toLower coinOption
             compareStr coinOption, PASSrw
             JE Pass
-            compareStr coinOption, SHOWrw
-            JE Exit
             compareStr coinOption, SAVErw
             JE Save
             compareStr coinOption, EXITrw
             JE ExitPlay
+            compareStr coinOption, SHOWrw
+            JE Reporte
             JMP Play
         _play3:
             SUB coinOption[0], 61H              ;OBTIENE UN ÍNDICE DE COLUMNA, BASE 0 => coinOption[0] <- coinOption[0] - 61H
@@ -285,7 +301,11 @@ main proc
         flushStr LOGICM, SIZEOF LOGICM, 20H ;LIMPIA EL ARREGLO LÓGICO DE POSICIONES
         MOV actTurn, 01H                ;ESTABLECE EL TURNO PARA LAS NEGRAS
         MOV ctPASS, 00H              ;LIMPIA EL VALOR DE ctPASS
+        CALL genRep
         JMP Header
+    Reporte:
+        CALL genRep
+        JMP Play
     Exit:
         MOV AX, 4C00H
         INT 21H
@@ -337,4 +357,211 @@ toASCII PROC
 	INC BX
 	RET
 toASCII ENDP
+
+genRep PROC
+    MOV AL, RepCte                          ;MUEVE AL ACUMULADOR LA LETRA DE REPORTE
+    .IF (AL > 'z')
+        MOV AL, 'a'
+        MOV RepCte, AL
+    .ENDIF
+    MOV RepName[3], AL                       ;COMPONE EL NOMBRE DEL REPORTE
+    createFile RepName                       ;CREA EL ARCHIVO
+    MOV fileHandlerVar, AX                   ;ALMACENA EL HANDLER
+    ;------------------ IMPRESION DEL ENCABEZADO ------------------
+    MOV BX, OFFSET html1                     ;ALMACENA LA DIRECCIÓN DEL ARREGLO EN BASE 
+    CALL contarRep                           ;LLAMA EL PROCEDIMIENTO PARA CONTAR EL TAMAÑO DEL ARREGLO
+    writeFile fileHandlerVar, html1, SI      ;ESCRIBE EL HEADER DEL REPORTE
+    ;------------------ IMPRESION DEL TABLERO ------------------
+    MOV AL, 01H
+    MOV ctRep1, AL                          ;INICIALIZA EL CONTADOR
+    flushStr coinOption, SIZEOF coinOption, 00H
+    .WHILE (ctRep1 < 8 )
+        ;------------------ IMPRESION DE APERTURA DIV ------------------
+        MOV BX, OFFSET divo
+        CALL contarRep
+        writeFile fileHandlerVar, divo, SI  ;ESCRIBE UN DIV
+        ;------------------ IMPRESION DE PARRAFO CON LETRA ------------------
+        MOV AL, ctRep1
+        MOV pltter1[15], AL                ;ALOJA LA LETRA DE COLUMNA
+        ADD pltter1[15], 40H                ;CONVIERTE A ASCII
+        MOV BX, OFFSET pltter1              
+        CALL contarRep
+        writeFile fileHandlerVar, pltter1, SI 
+        .IF (ctRep1 == 7)
+            ;------------------ IMPRESION DE PARRAFO CON LETRA EN LA ÚLTIMA COLUMNA ------------------
+            MOV AL, ctRep1
+            MOV pltter2[20], AL             ;ALOJA LA LETRA DE COLUMNA
+            ADD pltter2[20], 41H                ;CONVIERTE A ASCII
+            MOV BX, OFFSET pltter2              
+            CALL contarRep
+            writeFile fileHandlerVar, pltter2, SI 
+        .ENDIF
+        MOV AL, 08H
+        MOV ctRep2, AL
+        .WHILE (ctRep2 > 0)
+            .IF (ctRep2 != 1)
+                ;------------------ IMPRESION DE APERTURA DIV ------------------
+                MOV BX, OFFSET divo
+                CALL contarRep
+                writeFile fileHandlerVar, divo, SI 
+            .ENDIF
+            ;------------------ IMPRESION DE PARRAFO CON NUMERO ------------------
+            .IF (ctRep1 == 1)
+                MOV AL, ctRep2
+                MOV pnmber1[16], AL             
+                ADD pnmber1[16], '0'                
+                MOV BX, OFFSET pnmber1              
+                CALL contarRep
+                writeFile fileHandlerVar, pnmber1, SI 
+            .ENDIF
+            ;------------------ IMPRESION DE SVG ------------------
+            .IF (ctRep1 != 7)
+                ;-- COLUMNA
+                MOV AL, ctRep1                  
+                SUB AL, 01
+                MOV coinOption[0], AL
+                ;-- FILA    
+                MOV AL, 08H
+                SUB AL, ctRep2
+                ;-- ACCESO POR MAPEO
+                XOR AH, AH
+                SHL AX, 3
+                ADD AL, coinOption[0]
+                MOV BX, AX
+                .IF LOGICM[BX] == 'B'
+                    ;-----
+                    MOV BX, OFFSET htmlB1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlB1, SI
+                    ;-----
+                    MOV BX, OFFSET circle
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle, SI
+                .ELSEIF LOGICM[BX] == 'N'
+                    ;-----
+                    MOV BX, OFFSET htmlN1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlN1, SI
+                    ;-----
+                    MOV BX, OFFSET circle
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle, SI
+                .ENDIF
+            .ELSE
+                ;-- COLUMNA
+                MOV AL, ctRep1                  
+                SUB AL, 01
+                MOV coinOption[0], AL
+                ;-- FILA    
+                MOV AL, 08H
+                SUB AL, ctRep2
+                ;-- ACCESO POR MAPEO
+                XOR AH, AH
+                SHL AX, 3
+                ADD AL, coinOption[0]
+                MOV BX, AX
+                .IF LOGICM[BX] == 'B'
+                    ;-----
+                    MOV BX, OFFSET htmlB1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlB1, SI
+                    ;-----
+                    MOV BX, OFFSET circle
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle, SI
+                .ELSEIF LOGICM[BX] == 'N'
+                    ;-----
+                    MOV BX, OFFSET htmlN1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlN1, SI
+                    ;-----
+                    MOV BX, OFFSET circle
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle, SI
+                .ENDIF
+                ;-- COLUMNA
+                MOV AL, ctRep1    
+                MOV coinOption[0], AL
+                ;-- FILA    
+                MOV AL, 08H
+                SUB AL, ctRep2
+                ;-- ACCESO POR MAPEO
+                XOR AH, AH
+                SHL AX, 3
+                ADD AL, coinOption[0]
+                MOV BX, AX
+                .IF LOGICM[BX] == 'B'
+                    ;-----
+                    MOV BX, OFFSET htmlB2
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlB2, SI
+                    ;-----
+                    MOV BX, OFFSET circle
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle, SI
+                .ELSEIF LOGICM[BX] == 'N'
+                    ;-----
+                    MOV BX, OFFSET htmlN2
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlN2, SI
+                    ;-----
+                    MOV BX, OFFSET circle
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle, SI
+                .ENDIF
+            .ENDIF
+            .IF (ctRep2 != 1)
+                ;------------------ IMPRESION DE CERRADURA DIV ------------------
+                MOV BX, OFFSET divc
+                CALL contarRep
+                writeFile fileHandlerVar, divc, SI
+            .ENDIF
+            DEC ctRep2
+        .ENDW
+        ;------------------ IMPRESION DE CERRADURA DIV ------------------
+        MOV BX, OFFSET divc
+        CALL contarRep
+        writeFile fileHandlerVar, divc, SI
+        INC ctRep1
+    .ENDW
+    ;------------------ IMPRESION DE CERRADURA DIV ------------------
+    MOV BX, OFFSET divc
+    CALL contarRep
+    writeFile fileHandlerVar, divc, SI
+    ;------------------ IMPRESION DE APERTURA DIV ------------------
+    MOV BX, OFFSET divo
+    CALL contarRep
+    writeFile fileHandlerVar, divo, SI  ;ESCRIBE UN DIV
+    ;------------------ IMPRESION DE FECHA DIV ------------------
+    CALL getDate
+    CALL getTime
+    MOV BX, OFFSET date
+    CALL contarRep
+    writeFile fileHandlerVar, date, SI
+    MOV BX, OFFSET time
+    CALL contarRep
+    writeFile fileHandlerVar, time, SI
+    ;------------------ IMPRESION DE CERRADURA DIV ------------------
+    MOV BX, OFFSET divc
+    CALL contarRep
+    writeFile fileHandlerVar, divc, SI
+    ;------------------ IMPRESION DE CERRADURA HTML ------------------
+    MOV BX, OFFSET htmlend
+    CALL contarRep
+    writeFile fileHandlerVar, htmlend, SI
+    ;------------------ CERRAR ARCHIVO ------------------
+    closeFile fileHandlerVar
+    printStrln fileSc2
+    INC RepCte
+    RET
+genRep ENDP
+
+contarRep PROC
+    XOR SI, SI
+    MOV AL, '$'
+    .WHILE ( [BX + SI] != AL)
+        INC SI
+    .ENDW
+    RET
+contarRep ENDP
 end main
