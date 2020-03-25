@@ -88,7 +88,7 @@ SAVErw db "save$"
 PLAYWD  db "1$"
 LOADWD  db "2$"
 EXITWD  db "3$"
-cteGen db " $"
+;cteGen db " $"
 ;--------------------------------------
 ;--------------- VOLATILE -------------
 ;--------------------------------------
@@ -667,11 +667,11 @@ verifyCatch PROC
     MOV CL, ctPOS
     MOV DI, CX
     ;CAMBIA A BUSCAR FICHAS AMIGAS
-    .IF (AH == 'B')
-        MOV AH, 'N' 
-    .ELSE
-        MOV AH, 'B'
-    .ENDIF
+    ;.IF (AH == 'B')
+    ;    MOV AH, 'N' 
+    ;.ELSE
+    ;    MOV AH, 'B'
+    ;.ENDIF
     .WHILE( SI != DI)
         ;RECUPERA LA FORMACIÓN
         MOV CL, POS[SI]
@@ -790,9 +790,6 @@ verifyCatch PROC
         MOV DI, CX
     .ENDW
     CALL sumarLib
-    MOV cteGen, AL
-    ADD cteGen, '0'
-    printStrln cteGen
     .IF (AX == 0)       ;EN AX SE ALMACENA LA SUMA 
         XOR SI, SI      ;LIMPIA INDICE DE ORIGEN
         XOR DI, DI      ;LIMPIA INDICE DE DESTINO
@@ -847,9 +844,6 @@ verifySuicide PROC
     MOV ctPOS, 01H                      ;INICIALIZA EL ctPOS
     XOR CH, CH
     MOV CL, ctPOS
-    MOV cteGEN, CL
-    ADD cteGEN, '0'
-    printStrln cteGEN
     MOV DI, CX
     .WHILE( SI != DI)
         ;RECUPERA LA FORMACIÓN
