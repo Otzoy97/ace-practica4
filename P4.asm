@@ -88,6 +88,7 @@ SAVErw db "save$"
 PLAYWD  db "1$"
 LOADWD  db "2$"
 EXITWD  db "3$"
+cteGen db " $"
 ;--------------------------------------
 ;--------------- VOLATILE -------------
 ;--------------------------------------
@@ -604,10 +605,12 @@ sumarLib PROC
     XOR AX, AX
     XOR SI, SI
     MOV CL, ctPOS
-    _sumarLibLoop:
+    .WHILE (CL != 00H)
         ADD AL, LIB[SI]
         INC SI
-        LOOP _sumarLibLoop
+        DEC CL
+    .ENDW
+    RET
 sumarLib ENDP
 
 verifyCatch PROC
@@ -659,8 +662,10 @@ verifyCatch PROC
     .ENDIF
     ;----- RECUPERAR FORMACION
     XOR SI, SI
-    MOV CX, CX
+    XOR CX, CX
     XOR DI, DI
+    MOV CL, ctPOS
+    MOV DI, CX
     ;CAMBIA A BUSCAR FICHAS AMIGAS
     .IF (AH == 'B')
         MOV AH, 'N' 
@@ -785,36 +790,37 @@ verifyCatch PROC
         MOV DI, CX
     .ENDW
     CALL sumarLib
+    MOV cteGen, AL
+    ADD cteGen, '0'
+    printStrln cteGen
     .IF (AX == 0)       ;EN AX SE ALMACENA LA SUMA 
-        XOR SI, SI
-        XOR DI, DI
-        XOR CX, CX
-        MOV AL, ctPOS
+        XOR SI, SI      ;LIMPIA INDICE DE ORIGEN
+        XOR DI, DI      ;LIMPIA INDICE DE DESTINO
+        XOR CX, CX      ;LIMPIA REGISTRO DE CONTEO
+        MOV AL, ctPOS   ;MUEVE AL ACUMULADO LOW EL NÚMERO DE POSICIONES 
+        MOV CL, ctPOS   ;MUEVE AL CONTADOR LOW EL NÚMERO DLE POSICIONES
+        MOV DI, CX      ;MUEVE EL CONTADOR AL INDICE DE DESTINO
         .IF (AH == 'B') ;ENTONCES ENEMIGAS NEGRAS 
-            ADD scoreN, AL
+            ADD scoreN, AL              ;SUMA ACUMULADOR LOW AL PUNTEO DE NEGROS
             .WHILE (SI != DI)
-                XOR AH, AH
-                MOV AL, ctPOS[SI]       ;RECUPERA LA POSICIÓN
-                MOV DI, AX              ;RECUPERA LA POSICIÓN Y LA ALMACENA EN DI
-                MOV LOGICM1[DI], 'N'    ;MARCA COMO NEGRO LA POSICION DE AREA
-                MOV LOGICM[DI], ' '     ;MARCA COMO LIBRE LA POSICIÓN CAPTURADA
+                MOV AL, POS[SI]         ;RECUPERA LA POSICIÓN A CAPTURAR Y LA ALMACENA EN ACUMULADOR LOW
+                PUSH DI                 ;ALMACENA EL VALOR ORIGNAL DE DI
+                MOV DI, AX              ;MUEVE EL ACUMULADOR AL INDICE DE DESTINO
+                MOV LOGICM1[DI], 'N'    ;CON EL INDICE DE DESTINO MARCA COMO NEGRO LA POSICION DE AREA
+                MOV LOGICM[DI], 20H     ;CON EL INDICE DE DESTINO MARCA COMO LIBRE LA POSICIÓN CAPTURADA
                 INC SI
-                XOR CH, CH
-                MOV CL, ctPOS
-                MOV DI, CX
+                POP DI                  ;RECUPERA EL VALOR ORIGINAL DE DI
             .ENDW
         .ELSE ;ENTONCES ENEMIGAS BLANCAS
-            ADD scoreB, AL
+            ADD scoreB, AL              ;SUMA ACUMULADOR LOW AL PUNTEO DE BLANCAS
             .WHILE (SI != DI)
-                XOR AH, AH
-                MOV AL, ctPOS[SI]       ;RECUPERA LA POSICIÓN
+                MOV AL, POS[SI]         ;RECUPERA LA POSICIÓN
+                PUSH DI                 ;ALMACENA EL VALOR ORIGINAL DE DI
                 MOV DI, AX              ;RECUPERA LA POSICIÓN Y LA ALMACENA EN DI
-                MOV LOGICM1[DI], 'B'    ;MARCA COMO NEGRO LA POSICION DE AREA
-                MOV LOGICM[DI], ' '     ;MARCA COMO LIBRE LA POSICIÓN CAPTURADA
+                MOV LOGICM1[DI], 'B'    ;CON EL INDICE DE DESTINO MARCA COMO NEGRO LA POSICION DE AREA
+                MOV LOGICM[DI], 20H     ;CON EL INDICE DE DESTINO MARCA COMO LIBRE LA POSICIÓN CAPTURADA
                 INC SI
-                XOR CH, CH
-                MOV CL, ctPOS
-                MOV DI, CX
+                POP DI                  ;RECUPERA EL VALOR ORIGINAL DE DI
             .ENDW
         .ENDIF
     .ELSE
@@ -838,7 +844,13 @@ verifySuicide PROC
     XOR SI, SI
     XOR DI, DI
     MOV POS[0], BL                     ;MOVER LA POSICIÓN DE LA ÚLTIMA ALIADA A POSICION
-    MOV ctPOS, 01                      ;INICIALIZA EL ctPOS
+    MOV ctPOS, 01H                      ;INICIALIZA EL ctPOS
+    XOR CH, CH
+    MOV CL, ctPOS
+    MOV cteGEN, CL
+    ADD cteGEN, '0'
+    printStrln cteGEN
+    MOV DI, CX
     .WHILE( SI != DI)
         ;RECUPERA LA FORMACIÓN
         XOR CH, CH
