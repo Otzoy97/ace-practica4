@@ -790,7 +790,7 @@ verifyCatch PROC
         MOV DI, CX
     .ENDW
     CALL sumarLib
-    .IF (AX == 0)       ;EN AX SE ALMACENA LA SUMA 
+    .IF (AX == 00H && ctPOS != 00H)       ;EN AX SE ALMACENA LA SUMA 
         XOR SI, SI      ;LIMPIA INDICE DE ORIGEN
         XOR DI, DI      ;LIMPIA INDICE DE DESTINO
         XOR CX, CX      ;LIMPIA REGISTRO DE CONTEO
