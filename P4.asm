@@ -70,6 +70,8 @@ htmlN2  db    "<svg class=" , 22H, "negro2" , 22H, ">",0ah, 0dh,"$"
 htmlB2  db    "<svg class=" , 22H, "blanco2" , 22H, ">",0ah, 0dh,"$"
 htmlend db    "</body></html>",0ah, 0dh,"$"
 RepName db    "rep .html", 00h
+scoreB  db    "PUNTEO BLANCAS:  $"
+scoreN  db    "PUNTEO NEGRAS:  $"
 RepCte  db    'a'
 
 ;------------ BOARD PRINT -------------
@@ -108,6 +110,8 @@ date        db "00/00/0000 - $"
 time        db "00:00:00$"
 ctRep1      db ?
 ctRep2      db ?
+punteoB     db ?
+punteoN     db ?
 ;--------------------------------------
 ; CODE SEGMENT
 ;--------------------------------------
@@ -174,154 +178,7 @@ main proc
             SHL AX, 3                           ;MULTIPLICA POR OCHO
             ADD AL, coinOption[0]               ;SUMA LA COLUMNA
             XOR BH, BH                          ;LIMPIA EL INDICE BASE SUPERIOR
-            MOV BX, AX                          ;MUEVE EL RESULTADO A UN REGISTRO BASE
-            ;----- VERIFICA SI LA POSICIÓN GENERARÍA UNA CAPTURA -----
-            ;----- BUSCA UNA FICHA ENEMIGA ----
-            flushStr POS, 64, 00H               ;LIMPIA EL ARREGLO DE POSICIONES
-            flushStr LIB, 64, 00H               ;LIMPIA EL ARREGLO DE LIBERTADES
-            flushStr ctPOS, 1, 00h              ;LIMPIA EL CONTADOR DE POSICIONES
-            .IF (actTurn == 01H)
-                ;TURNO DE NEGRAS
-                MOV AH, 'B' 
-            .ELSE
-                MOV AH, 'N'
-            .ENDIF
-            .IF (BX > 7)                 
-                ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
-                .IF (LOGICM[BX - 8] == AH)
-                    MOV CL, BL
-                    SUB CL, 08H
-                    MOV POS, CL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN ENEMIGO
-                    INC ctPOS                   ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
-                .ENDIF
-            .ENDIF
-            .IF (BX < 56)                       
-                ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
-                .IF (LOGICM[BX + 8] == AH)
-                    MOV CL, BL
-                    ADD CL, 08H
-                    MOV POS[1], CL
-                    INC ctPOS
-                .ENDIF
-            .ENDIF
-            .IF (BX != 7 && BX != 15 && BX != 23 && BX != 31 && BX != 39 && BX != 47 && BX != 55 && BX != 63)
-                ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
-                .IF (LOGICM[BX + 1] == AH)
-                    MOV CL, BL
-                    ADD CL, 01H
-                    MOV POS[2], CL
-                    INT ctPOS
-                .ENDIF
-            .ENDIF
-            .IF (BX != 0 && BX != 8 && BX != 16 && BX != 24 && BX != 32 && BX != 40 && BX != 48 && BX != 56)
-                ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
-                .IF (LOGICM[BX - 1] == AH)
-                    MOV CL, BL
-                    SUB CL, 01H
-                    MOV POS[3], CL
-                    INC ctPOS
-                .ENDIF
-            .ENDIF
-            ;----- RECUPERAR FORMACION
-            XOR SI, SI
-            MOV CX, CX
-            XOR DI, DI
-            ;CAMBIA A BUSCAR FICHAS AMIGAS
-            .IF (AH == 'B')
-                MOV AH, 'N' 
-            .ELSE
-                MOV AH, 'B'
-            .ENDIF
-            .WHILE( SI != ctPOS)
-                ;RECUPERA LA FORMACIÓN
-                MOV CL, POS[SI]
-                .IF (CX > 7)                 
-                    ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
-                    .IF (LOGICM[CX - 8] == AH)
-                        MOV AL, CL
-                        SUB AL, 08H
-                        PUSH AL                         ;GUARDA LA POSICION 
-                        CALL posExist
-                        .IF (AL == 00H)
-                            POP AL                         ;RECUPERA EL VALOR ALOJADO EN AL
-                            MOV DI, ctPOS                   ;
-                            MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
-                            INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
-                        .ENDIF
-                    .ENDIF
-                .ENDIF
-                .IF (CX < 56)                       
-                    ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
-                    .IF (LOGICM[CX + 8] == AH)
-                        MOV AL, CL
-                        ADD AL, 08H
-                        PUSH AL                         ;GUARDA LA POSICION 
-                        CALL posExist
-                        .IF (AL == 00H)
-                            POP AL                         ;RECUPERA EL VALOR ALOJADO EN AL
-                            MOV DI, ctPOS                   ;
-                            MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
-                            INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
-                        .ENDIF
-                    .ENDIF
-                .ENDIF
-                .IF (CX != 7 && CX != 15 && CX != 23 && CX != 31 && CX != 39 && CX != 47 && CX != 55 && CX != 63)
-                    ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
-                    .IF (LOGICM[CX + 1] == AH)
-                        MOV AL, CL
-                        ADD AL, 01H
-                        PUSH AL                         ;GUARDA LA POSICION 
-                        CALL posExist
-                        .IF (AL == 00H)
-                            POP AL                         ;RECUPERA EL VALOR ALOJADO EN AL
-                            MOV DI, ctPOS                   ;
-                            MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
-                            INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
-                        .ENDIF
-                    .ENDIF
-                .ENDIF
-                .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 48 && CX != 56)
-                    ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
-                    .IF (LOGICM[CX - 1] == AH)
-                        MOV AL, CL
-                        SUB AL, 01H
-                        PUSH AL                         ;GUARDA LA POSICION 
-                        CALL posExist
-                        .IF (AL == 00H)
-                            POP AL                         ;RECUPERA EL VALOR ALOJADO EN AL
-                            MOV DI, ctPOS                   ;
-                            MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
-                            INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
-                        .ENDIF
-                    .ENDIF
-                .ENDIF
-                ;------ CONTARÁ LIBERTADES
-                .IF (CX > 7)                 
-                    ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
-                    .IF (LOGICM[CX - 8] == 20H)
-                        INC LIB[SI]
-                    .ENDIF
-                .ENDIF
-                .IF (CX < 56)                       
-                    ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
-                    .IF (LOGICM[CX + 8] == 20H)
-                        INC LIB[SI]
-                    .ENDIF
-                .ENDIF
-                .IF (CX != 7 && CX != 15 && CX != 23 && CX != 31 && CX != 39 && CX != 47 && CX != 55 && CX != 63)
-                    ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
-                    .IF (LOGICM[CX + 1] == 20H)
-                        INC LIB[SI]
-                    .ENDIF
-                .ENDIF
-                .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 58 && CX != 66)
-                    ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
-                    .IF (LOGICM[CX - 1] == 20H)
-                        INC LIB[SI]
-                    .ENDIF
-                .ENDIF
-                DEC CX
-            .ENDW
+            MOV BX, AX                          ;MUEVE EL RESULTADO A UN REGISTRO BASE                       
             CMP LOGICM[BX], 20H                 ;COMPARA SI LA POSICION ES IGUAL A UN ESPACIO
             JE _play4                           ;ES UN ESPACIO DISPONIBLE
             printStrln coinEr3                  ;INFORMA AL USUARIO QUE ESA POSICIÓN YA ESTÁ OCUPADA
@@ -331,10 +188,13 @@ main proc
             JNE _playwhite                      ;TURNO DE BLANCAS
             MOV LOGICM[BX], 4EH                 ;GUARDA FICHA NEGRA
             DEC actTurn                         ;ASIGNA TURNO A BLANCA
+            CALL verifyCatch
             JMP BoardPrint                      ;IMPRIME TABLERO
         _playwhite:
             MOV LOGICM[BX], 42H                 ;GUARDA FICHA BLANCA
             INC actTurn                         ;ASIGNA TURNO A NEGRA
+            CALL verifyCatch
+            JMP BoardPrint
     BoardPrint:
         XOR SI, SI
         _loopBoardPrint:
@@ -719,12 +579,14 @@ contarRep PROC
 contarRep ENDP
 
 posExist PROC
-LOCAL cteARR:BYTE, ptPOS:BYTE
-    MOV cteARR, ctPOS         ;INICIALIZA EL CONTADOR
-    MOV ptPOS, AL             ;INICIALIZA EL CONTADOR
     XOR DI, DI
-    .WHILE (DI != cteARR)
-        .IF (POS[DI] == ptPOS)
+    PUSH CX
+    XOR CH, CH
+    MOV CL, ctPOS
+    MOV SI, CX
+    POP CX
+    .WHILE (DI != SI)
+        .IF (POS[DI] == AL)
             MOV AL, 01H
             JMP _posExistExit
             .BREAK
@@ -735,6 +597,378 @@ LOCAL cteARR:BYTE, ptPOS:BYTE
     _posExistExit:
         XOR DI, DI
         RET
-posExist PROC
+posExist ENDP
+
+sumarLib PROC
+    XOR CX, CX
+    XOR AX, AX
+    XOR SI, SI
+    MOV CL, ctPOS
+    _sumarLibLoop:
+        ADD AL, LIB[SI]
+        INC SI
+        LOOP _sumarLibLoop
+sumarLib ENDP
+
+verifyCatch PROC
+    ;----- VERIFICA SI LA POSICIÓN GENERARÍA UNA CAPTURA -----
+    ;----- BUSCA UNA FICHA ENEMIGA ----
+    flushStr POS, 64, 00H               ;LIMPIA EL ARREGLO DE POSICIONES
+    flushStr LIB, 64, 00H               ;LIMPIA EL ARREGLO DE LIBERTADES
+    flushStr ctPOS, 1, 00h              ;LIMPIA EL CONTADOR DE POSICIONES
+    .IF (actTurn == 01H)                ;TURNO ACTUAL DE NEGRAS -> TURNO ANTERIOR DE BLANCAS
+        MOV AH, 'N'
+    .ELSE
+        MOV AH, 'B'
+    .ENDIF
+    .IF (BX > 7)                 
+        ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
+        .IF (LOGICM[BX - 8] == AH)
+            MOV CL, BL
+            SUB CL, 08H
+            MOV POS, CL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN ENEMIGO
+            INC ctPOS                   ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+        .ENDIF
+   .ENDIF
+    .IF (BX < 56)                       
+        ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
+        .IF (LOGICM[BX + 8] == AH)
+            MOV CL, BL
+            ADD CL, 08H
+            MOV POS[1], CL
+            INC ctPOS
+           .ENDIF
+    .ENDIF
+    .IF (BX != 7 && BX != 15 && BX != 23 && BX != 31 && BX != 39 && BX != 47 && BX != 55 && BX != 63)
+        ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
+        .IF (LOGICM[BX + 1] == AH)
+            MOV CL, BL
+            ADD CL, 01H
+            MOV POS[2], CL
+            INC ctPOS
+        .ENDIF
+    .ENDIF
+    .IF (BX != 0 && BX != 8 && BX != 16 && BX != 24 && BX != 32 && BX != 40 && BX != 48 && BX != 56)
+        ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
+        .IF (LOGICM[BX - 1] == AH)
+            MOV CL, BL
+            SUB CL, 01H
+            MOV POS[3], CL
+            INC ctPOS
+        .ENDIF
+    .ENDIF
+    ;----- RECUPERAR FORMACION
+    XOR SI, SI
+    MOV CX, CX
+    XOR DI, DI
+    ;CAMBIA A BUSCAR FICHAS AMIGAS
+    .IF (AH == 'B')
+        MOV AH, 'N' 
+    .ELSE
+        MOV AH, 'B'
+    .ENDIF
+    .WHILE( SI != DI)
+        ;RECUPERA LA FORMACIÓN
+        MOV CL, POS[SI]
+        .IF (CX > 7)                 
+            ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
+            MOV DI, CX
+            .IF (LOGICM[DI - 8] == AH)
+                MOV AL, CL
+                SUB AL, 08H
+                PUSH AX                         ;GUARDA LA POSICION 
+                CALL posExist
+                .IF (AL == 00H)
+                    POP AX                         ;RECUPERA EL VALOR ALOJADO EN AL
+                    PUSH CX                         ;GUARDA EL VALOR DE CX
+                    XOR CH, CH                      ;LIMPIA C HIGH
+                    MOV CL, ctPOS                   ;MUEVE A CLOW
+                    MOV DI, CX
+                    POP CX                          ;RECUPERA EL VALOR DE CX
+                    MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
+                    INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                .ENDIF
+            .ENDIF
+        .ENDIF
+        .IF (CX < 56)                       
+            ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
+            MOV DI, CX
+            .IF (LOGICM[DI + 8] == AH)
+                MOV AL, CL
+                ADD AL, 08H
+                PUSH AX                         ;GUARDA LA POSICION 
+                CALL posExist
+                .IF (AL == 00H)
+                    POP AX                         ;RECUPERA EL VALOR ALOJADO EN AL
+                    PUSH CX                         ;GUARDA EL VALOR DE CX
+                    XOR CH, CH                      ;LIMPIA C HIGH
+                    MOV CL, ctPOS                   ;MUEVE A CLOW
+                    MOV DI, CX
+                    POP CX                          ;RECUPERA EL VALOR DE CX
+                    MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
+                    INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                .ENDIF
+            .ENDIF
+        .ENDIF
+        .IF (CX != 7 && CX != 15 && CX != 23 && CX != 31 && CX != 39 && CX != 47 && CX != 55 && CX != 63)
+            ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
+            MOV DI, CX
+            .IF (LOGICM[DI + 1] == AH)
+                MOV AL, CL
+                ADD AL, 01H
+                PUSH AX                         ;GUARDA LA POSICION 
+                CALL posExist
+                .IF (AL == 00H)
+                    POP AX                         ;RECUPERA EL VALOR ALOJADO EN AL
+                    PUSH CX                         ;GUARDA EL VALOR DE CX
+                    XOR CH, CH                      ;LIMPIA C HIGH
+                    MOV CL, ctPOS                   ;MUEVE A CLOW
+                    MOV DI, CX
+                    POP CX                          ;RECUPERA EL VALOR DE CX
+                    MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
+                    INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                .ENDIF
+            .ENDIF
+        .ENDIF
+        .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 48 && CX != 56)
+            ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
+            MOV DI, CX
+            .IF (LOGICM[DI - 1] == AH)
+                MOV AL, CL
+                SUB AL, 01H
+                PUSH AX                         ;GUARDA LA POSICION 
+                CALL posExist
+                .IF (AL == 00H)
+                    POP AX                         ;RECUPERA EL VALOR ALOJADO EN AL
+                    PUSH CX                         ;GUARDA EL VALOR DE CX
+                    XOR CH, CH                      ;LIMPIA C HIGH
+                    MOV CL, ctPOS                   ;MUEVE A CLOW
+                    MOV DI, CX
+                    POP CX                          ;RECUPERA EL VALOR DE CX
+                    MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
+                    INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                .ENDIF
+            .ENDIF
+        .ENDIF
+        ;------ CONTARÁ LIBERTADES
+        .IF (CX > 7)                 
+            ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
+            MOV DI, CX
+            .IF (LOGICM[DI - 8] == 20H)
+                INC LIB[SI]
+            .ENDIF
+        .ENDIF
+        .IF (CX < 56)                       
+            ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
+            MOV DI, CX
+            .IF (LOGICM[DI + 8] == 20H)
+                INC LIB[SI]
+            .ENDIF
+        .ENDIF
+        .IF (CX != 7 && CX != 15 && CX != 23 && CX != 31 && CX != 39 && CX != 47 && CX != 55 && CX != 63)
+            ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
+            MOV DI, CX
+            .IF (LOGICM[DI + 1] == 20H)
+                INC LIB[SI]
+            .ENDIF
+        .ENDIF
+        .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 58 && CX != 66)
+            ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
+            MOV DI, CX
+            .IF (LOGICM[DI - 1] == 20H)
+                INC LIB[SI]
+            .ENDIF
+        .ENDIF
+        INC SI
+        XOR CH, CH
+        MOV CL, ctPOS
+        MOV DI, CX
+    .ENDW
+    CALL sumarLib
+    .IF (AX == 0)       ;EN AX SE ALMACENA LA SUMA 
+        XOR SI, SI
+        XOR DI, DI
+        XOR CX, CX
+        MOV AL, ctPOS
+        .IF (AH == 'B') ;ENTONCES ENEMIGAS NEGRAS 
+            ADD scoreN, AL
+            .WHILE (SI != DI)
+                XOR AH, AH
+                MOV AL, ctPOS[SI]       ;RECUPERA LA POSICIÓN
+                MOV DI, AX              ;RECUPERA LA POSICIÓN Y LA ALMACENA EN DI
+                MOV LOGICM1[DI], 'N'    ;MARCA COMO NEGRO LA POSICION DE AREA
+                MOV LOGICM[DI], ' '     ;MARCA COMO LIBRE LA POSICIÓN CAPTURADA
+                INC SI
+                XOR CH, CH
+                MOV CL, ctPOS
+                MOV DI, CX
+            .ENDW
+        .ELSE ;ENTONCES ENEMIGAS BLANCAS
+            ADD scoreB, AL
+            .WHILE (SI != DI)
+                XOR AH, AH
+                MOV AL, ctPOS[SI]       ;RECUPERA LA POSICIÓN
+                MOV DI, AX              ;RECUPERA LA POSICIÓN Y LA ALMACENA EN DI
+                MOV LOGICM1[DI], 'B'    ;MARCA COMO NEGRO LA POSICION DE AREA
+                MOV LOGICM[DI], ' '     ;MARCA COMO LIBRE LA POSICIÓN CAPTURADA
+                INC SI
+                XOR CH, CH
+                MOV CL, ctPOS
+                MOV DI, CX
+            .ENDW
+        .ENDIF
+    .ELSE
+        CALL verifySuicide
+    .ENDIF
+    RET
+verifyCatch ENDP
+
+verifySuicide PROC
+    ;----- VERIFICA SI LA POSICIÓN GENERARÍA UNA CAPTURA -----
+    ;----- BUSCA UNA FICHA AMIGA ----
+    flushStr POS, 64, 00H               ;LIMPIA EL ARREGLO DE POSICIONES
+    flushStr LIB, 64, 00H               ;LIMPIA EL ARREGLO DE LIBERTADES
+    flushStr ctPOS, 1, 00h              ;LIMPIA EL CONTADOR DE POSICIONES
+    .IF (actTurn == 01H)                ;TURNO ACTUAL DE NEGRAS -> TURNO ANTERIOR DE BLANCAS
+        MOV AH, 'B'
+    .ELSE
+        MOV AH, 'N'
+    .ENDIF
+    ;----- RECUPERAR FORMACION
+    XOR SI, SI
+    XOR DI, DI
+    MOV POS[0], BL                     ;MOVER LA POSICIÓN DE LA ÚLTIMA ALIADA A POSICION
+    MOV ctPOS, 01                      ;INICIALIZA EL ctPOS
+    .WHILE( SI != DI)
+        ;RECUPERA LA FORMACIÓN
+        XOR CH, CH
+        MOV CL, POS[SI]
+        .IF (CX > 7)                 
+            ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
+            MOV DI, CX
+            .IF (LOGICM[DI - 8] == AH)
+                MOV AL, CL
+                SUB AL, 08H
+                PUSH AX                         ;GUARDA LA POSICION 
+                CALL posExist
+                .IF (AL == 00H)
+                    POP AX                         ;RECUPERA EL VALOR ALOJADO EN AL
+                    PUSH CX                         ;GUARDA EL VALOR DE CX
+                    XOR CH, CH                      ;LIMPIA C HIGH
+                    MOV CL, ctPOS                   ;MUEVE A CLOW
+                    MOV DI, CX
+                    POP CX                          ;RECUPERA EL VALOR DE CX
+                    MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
+                    INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                .ENDIF
+            .ENDIF
+        .ENDIF
+        .IF (CX < 56)                       
+            ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
+            MOV DI, CX
+            .IF (LOGICM[DI + 8] == AH)
+                MOV AL, CL
+                ADD AL, 08H
+                PUSH AX                         ;GUARDA LA POSICION 
+                CALL posExist
+                .IF (AL == 00H)
+                    POP AX                         ;RECUPERA EL VALOR ALOJADO EN AL
+                    PUSH CX                         ;GUARDA EL VALOR DE CX
+                    XOR CH, CH                      ;LIMPIA C HIGH
+                    MOV CL, ctPOS                   ;MUEVE A CLOW
+                    MOV DI, CX
+                    POP CX                          ;RECUPERA EL VALOR DE CX
+                    MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
+                    INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                .ENDIF
+            .ENDIF
+        .ENDIF
+        .IF (CX != 7 && CX != 15 && CX != 23 && CX != 31 && CX != 39 && CX != 47 && CX != 55 && CX != 63)
+            ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
+            MOV DI, CX
+            .IF (LOGICM[DI + 1] == AH)
+                MOV AL, CL
+                ADD AL, 01H
+                PUSH AX                         ;GUARDA LA POSICION 
+                CALL posExist
+                .IF (AL == 00H)
+                    POP AX                         ;RECUPERA EL VALOR ALOJADO EN AL
+                    PUSH CX                         ;GUARDA EL VALOR DE CX
+                    XOR CH, CH                      ;LIMPIA C HIGH
+                    MOV CL, ctPOS                   ;MUEVE A CLOW
+                    MOV DI, CX
+                    POP CX                          ;RECUPERA EL VALOR DE CX
+                    MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
+                    INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                .ENDIF
+            .ENDIF
+        .ENDIF
+        .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 48 && CX != 56)
+            ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
+            MOV DI, CX
+            .IF (LOGICM[DI - 1] == AH)
+                MOV AL, CL
+                SUB AL, 01H
+                PUSH AX                         ;GUARDA LA POSICION 
+                CALL posExist
+                .IF (AL == 00H)
+                    POP AX                         ;RECUPERA EL VALOR ALOJADO EN AL
+                    PUSH CX                         ;GUARDA EL VALOR DE CX
+                    XOR CH, CH                      ;LIMPIA C HIGH
+                    MOV CL, ctPOS                   ;MUEVE A CLOW
+                    MOV DI, CX
+                    POP CX                          ;RECUPERA EL VALOR DE CX
+                    MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
+                    INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                .ENDIF
+            .ENDIF
+        .ENDIF
+        ;------ CONTARÁ LIBERTADES
+        .IF (CX > 7)                 
+            ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
+            MOV DI, CX
+            .IF (LOGICM[DI - 8] == 20H)
+                INC LIB[SI]
+            .ENDIF
+        .ENDIF
+        .IF (CX < 56)                       
+            ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
+            MOV DI, CX
+            .IF (LOGICM[DI + 8] == 20H)
+                INC LIB[SI]
+            .ENDIF
+        .ENDIF
+        .IF (CX != 7 && CX != 15 && CX != 23 && CX != 31 && CX != 39 && CX != 47 && CX != 55 && CX != 63)
+            ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
+            MOV DI, CX
+            .IF (LOGICM[DI + 1] == 20H)
+                INC LIB[SI]
+            .ENDIF
+        .ENDIF
+        .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 58 && CX != 66)
+            ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
+            MOV DI, CX
+            .IF (LOGICM[DI - 1] == 20H)
+                INC LIB[SI]
+            .ENDIF
+        .ENDIF
+        INC SI
+        XOR CH, CH
+        MOV CL, ctPOS
+        MOV DI, CX
+    .ENDW
+    CALL sumarLib
+    .IF (AX == 0)
+        XOR SI, SI
+        XOR DI, DI
+        XOR CX, CX
+        MOV AL, ctPOS
+        ;MOVIMIENTO ILEGAL : SUICIDIO
+        printStrln coinEr1
+        ;REVERTIR COLOCACIÓN DE FICHA
+        MOV LOGICM[BX], ' '
+    .ENDIF
+    RET
+verifySuicide ENDP
 
 end main
