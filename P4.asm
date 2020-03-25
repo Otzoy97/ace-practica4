@@ -59,8 +59,14 @@ html1   db    "<!DOCTYPE html>", 0ah, 0dh
         db    "<div class=", 22H, "tablero", 22H, ">",0ah, 0dh,"$"
 
 circle  db    "<circle cx=" , 22H, "25" , 22H, " cy=" , 22H, "25" , 22H, " r=" , 22H, "20" , 22H, " />",0ah, 0dh,"</svg>$"
+circle1  db    "<circle cx=" , 22H, "24" , 22H, " cy=" , 22H, "24" , 22H, " r=" , 22H, "19" , 22H, " />",0ah, 0dh,"</svg>$"
+polygon db    "<polygon points=" , 22H, "29,15 47,47 10,47" , 22H, ">",0ah, 0dh,"</svg>$"
+rect    db    "<rect x=" , 22H, "15" , 22H, " y=" , 22H, "5" , 22H, " width=" , 22H, "25" , 22H, " height=" , 22H, "25" , 22H, " />",0ah, 0dh,"</svg>$"
 htmlN1  db    "<svg class=" , 22H, "negro1" , 22H, ">",0ah, 0dh,"$"
 htmlB1  db    "<svg class=" , 22H, "blanco1" , 22H, ">",0ah, 0dh,"$"
+htmlAN1  db    "<svg class=" , 22H, "cirque_out" , 22H, ">",0ah, 0dh,"$"
+htmlAB1  db    "<svg class=" , 22H, "square" , 22H, ">",0ah, 0dh,"$"
+htmlA1  db    "<svg class=" , 22H, "triangle" , 22H, ">",0ah, 0dh,"$"
 divo    db    "<div>",0ah, 0dh,"$"
 divc    db    "</div>",0ah, 0dh,"$"
 pltter1 db    "<p class=", 22H, "top", 22H, "> </p>",0ah, 0dh,"$"
@@ -68,11 +74,16 @@ pltter2 db    "<p class=", 22H, "top-left", 22H, "> </p>",0ah, 0dh,"$"
 pnmber1 db    "<p class=", 22H, "left", 22H, "> </p>",0ah, 0dh,"$"
 htmlN2  db    "<svg class=" , 22H, "negro2" , 22H, ">",0ah, 0dh,"$"
 htmlB2  db    "<svg class=" , 22H, "blanco2" , 22H, ">",0ah, 0dh,"$"
+htmlAN2  db    "<svg class=" , 22H, "cirque_out1" , 22H, ">",0ah, 0dh,"$"
+htmlAB2  db    "<svg class=" , 22H, "square1" , 22H, ">",0ah, 0dh,"$"
+htmlA2  db    "<svg class=" , 22H, "triangle1" , 22H, ">",0ah, 0dh,"$"
 htmlend db    "</body></html>",0ah, 0dh,"$"
 RepName db    "rep .html", 00h
-scoreB  db    "PUNTEO BLANCAS:  $"
-scoreN  db    "PUNTEO NEGRAS:  $"
+scoreB  db    0
+scoreN  db    0
 RepCte  db    'a'
+winWH   db    "GANA BLANCO$"
+winBL   db    "GANA NEGRO$"
 
 ;------------ BOARD PRINT -------------
 STREET  db 0BAH, "   $"
@@ -88,13 +99,12 @@ SAVErw db "save$"
 PLAYWD  db "1$"
 LOADWD  db "2$"
 EXITWD  db "3$"
-;cteGen db " $"
 ;--------------------------------------
 ;--------------- VOLATILE -------------
 ;--------------------------------------
 LOGICM      db 64 DUP(20H)     ;ARREGLO DE 64 POSICIONES QUE SIMULAN UNA MATRIZ DE 2X2
 LOGICM1     db 64 DUP(20H)     ;ARREGLO DE 64 POSICIONES QUE SIMULAN UNA MATRIZ DE 2X2, SERVIRÁ PARA ALMACENAR ÁREA CAPTURADA
-LOGICM2     db 65 DUP(20H)     ;COPIA EXACTA DEL ARREGLO LOGICM QUE ESTARÁ DOS JUGADA ATRÁS PARA VALIDAR EL KO
+;LOGICM2     db 65 DUP(20H)     ;COPIA EXACTA DEL ARREGLO LOGICM QUE ESTARÁ DOS JUGADA ATRÁS PARA VALIDAR EL KO
 POS         db 64 DUP(0)       ;ARREGLO AUXILIAR QUE SERVIRÁ PARA ALMACENAR POSICIONES
 LIB         db 64 DUP(0)       ;ARREGLO AUXILIAR QUE SERVIRÁ PARA ALMACENAR LIBERTADES
 ctPOS       db ?               ;CONTADOR DE FICHAS ALOJADAS  
@@ -111,8 +121,6 @@ date        db "00/00/0000 - $"
 time        db "00:00:00$"
 ctRep1      db ?
 ctRep2      db ?
-punteoB     db ?
-punteoN     db ?
 ;--------------------------------------
 ; CODE SEGMENT
 ;--------------------------------------
@@ -189,11 +197,13 @@ main proc
             JNE _playwhite                      ;TURNO DE BLANCAS
             MOV LOGICM[BX], 4EH                 ;GUARDA FICHA NEGRA
             DEC actTurn                         ;ASIGNA TURNO A BLANCA
+            INC scoreN
             CALL verifyCatch
             JMP BoardPrint                      ;IMPRIME TABLERO
         _playwhite:
             MOV LOGICM[BX], 42H                 ;GUARDA FICHA BLANCA
             INC actTurn                         ;ASIGNA TURNO A NEGRA
+            INC scoreB
             CALL verifyCatch
             JMP BoardPrint
     BoardPrint:
@@ -239,10 +249,7 @@ main proc
         INC ctPASS                              ;INCREMENTA EL CONTADOR
         CMP ctPASS, 02H
         JNE _passTurn
-        flushStr LOGICM, SIZEOF LOGICM, 20H     ;LIMPIA EL ARREGLO LÓGICO DE POSICIONES
-        MOV actTurn, 01H                        ;ESTABLECE EL TURNO PARA LAS NEGRAS
-        MOV ctPASS, 00H                         ;LIMPIA EL VALOR DE ctPASS
-        JMP Header
+        JMP ExitPlay
         _passTurn:
             CMP actTurn, 01H
             JNE _whiteTurn
@@ -312,10 +319,19 @@ main proc
             closeFile fileHandlerVar            ;INTENTA CERRAR EL ARCHIVO
             JMP MainMenu
     ExitPlay:
-        flushStr LOGICM, SIZEOF LOGICM, 20H ;LIMPIA EL ARREGLO LÓGICO DE POSICIONES
+        CALL genRep1
+        MOV BL, scoreN
+        .IF (scoreB >= BL)
+            printStrln winWH
+        .ELSE
+            printStrln winBL
+        .ENDIF
+        flushStr LOGICM1, SIZEOF LOGICM, 20H ;LIMPIA EL ARREGLO LÓGICO DE POSICIONES
+        flushStr LOGICM1, SIZEOF LOGICM1, 20H ;LIMPIA EL ARREGLO LÓGICO DE POSICIONES*
         MOV actTurn, 01H                ;ESTABLECE EL TURNO PARA LAS NEGRAS
-        MOV ctPASS, 00H              ;LIMPIA EL VALOR DE ctPASS
-        CALL genRep
+        MOV ctPASS, 00H                 ;LIMPIA EL VALOR DE ctPASS
+        MOV scoreN, 00H
+        MOV scoreB, 00H
         JMP Header
     Reporte:
         CALL genRep
@@ -570,6 +586,285 @@ genRep PROC
     RET
 genRep ENDP
 
+genRep1 PROC
+    MOV AL, RepCte                          ;MUEVE AL ACUMULADOR LA LETRA DE REPORTE
+    .IF (AL > 'z')
+        MOV AL, 'a'
+        MOV RepCte, AL
+    .ENDIF
+    MOV RepName[3], AL                       ;COMPONE EL NOMBRE DEL REPORTE
+    createFile RepName                       ;CREA EL ARCHIVO
+    MOV fileHandlerVar, AX                   ;ALMACENA EL HANDLER
+    ;------------------ IMPRESION DEL ENCABEZADO ------------------
+    MOV BX, OFFSET html1                     ;ALMACENA LA DIRECCIÓN DEL ARREGLO EN BASE 
+    CALL contarRep                           ;LLAMA EL PROCEDIMIENTO PARA CONTAR EL TAMAÑO DEL ARREGLO
+    writeFile fileHandlerVar, html1, SI      ;ESCRIBE EL HEADER DEL REPORTE
+    ;------------------ IMPRESION DEL TABLERO ------------------
+    MOV AL, 01H
+    MOV ctRep1, AL                          ;INICIALIZA EL CONTADOR
+    flushStr coinOption, SIZEOF coinOption, 00H
+    .WHILE (ctRep1 < 8 )
+        ;------------------ IMPRESION DE APERTURA DIV ------------------
+        MOV BX, OFFSET divo
+        CALL contarRep
+        writeFile fileHandlerVar, divo, SI  ;ESCRIBE UN DIV
+        ;------------------ IMPRESION DE PARRAFO CON LETRA ------------------
+        MOV AL, ctRep1
+        MOV pltter1[15], AL                ;ALOJA LA LETRA DE COLUMNA
+        ADD pltter1[15], 40H                ;CONVIERTE A ASCII
+        MOV BX, OFFSET pltter1              
+        CALL contarRep
+        writeFile fileHandlerVar, pltter1, SI 
+        .IF (ctRep1 == 7)
+            ;------------------ IMPRESION DE PARRAFO CON LETRA EN LA ÚLTIMA COLUMNA ------------------
+            MOV AL, ctRep1
+            MOV pltter2[20], AL             ;ALOJA LA LETRA DE COLUMNA
+            ADD pltter2[20], 41H                ;CONVIERTE A ASCII
+            MOV BX, OFFSET pltter2              
+            CALL contarRep
+            writeFile fileHandlerVar, pltter2, SI 
+        .ENDIF
+        MOV AL, 08H
+        MOV ctRep2, AL
+        .WHILE (ctRep2 > 0)
+            .IF (ctRep2 != 1)
+                ;------------------ IMPRESION DE APERTURA DIV ------------------
+                MOV BX, OFFSET divo
+                CALL contarRep
+                writeFile fileHandlerVar, divo, SI 
+            .ENDIF
+            ;------------------ IMPRESION DE PARRAFO CON NUMERO ------------------
+            .IF (ctRep1 == 1)
+                MOV AL, ctRep2
+                MOV pnmber1[16], AL             
+                ADD pnmber1[16], '0'                
+                MOV BX, OFFSET pnmber1              
+                CALL contarRep
+                writeFile fileHandlerVar, pnmber1, SI 
+            .ENDIF
+            ;------------------ IMPRESION DE SVG ------------------
+            .IF (ctRep1 != 7)
+                ;-- COLUMNA
+                MOV AL, ctRep1                  
+                SUB AL, 01
+                MOV coinOption[0], AL
+                ;-- FILA    
+                MOV AL, 08H
+                SUB AL, ctRep2
+                ;-- ACCESO POR MAPEO
+                XOR AH, AH
+                SHL AX, 3
+                ADD AL, coinOption[0]
+                MOV BX, AX
+                .IF LOGICM[BX] == 'B'
+                    ;-----
+                    MOV BX, OFFSET htmlB1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlB1, SI
+                    ;-----
+                    MOV BX, OFFSET circle
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle, SI
+                .ELSEIF LOGICM[BX] == 'N'
+                    ;-----
+                    MOV BX, OFFSET htmlN1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlN1, SI
+                    ;-----
+                    MOV BX, OFFSET circle
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle, SI
+                .ELSEIF LOGICM1[BX] == 'B'
+                    ;-----
+                    MOV BX, OFFSET htmlAB1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlAB1, SI
+                    ;-----
+                    MOV BX, OFFSET rect
+                    CALL contarRep
+                    writeFile fileHandlerVar, rect, SI
+                .ELSEIF LOGICM1[BX] == 'N'
+                    ;-----
+                    MOV BX, OFFSET htmlAN1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlAN1, SI
+                    ;-----
+                    MOV BX, OFFSET circle1
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle1, SI
+                .ELSEIF LOGICM1[BX] == ' '
+                    ;-----
+                    MOV BX, OFFSET htmlA1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlA1, SI
+                    ;-----
+                    MOV BX, OFFSET polygon
+                    CALL contarRep
+                    writeFile fileHandlerVar, polygon, SI
+                .ENDIF
+            .ELSE
+                ;-- COLUMNA
+                MOV AL, ctRep1                  
+                SUB AL, 01
+                MOV coinOption[0], AL
+                ;-- FILA    
+                MOV AL, 08H
+                SUB AL, ctRep2
+                ;-- ACCESO POR MAPEO
+                XOR AH, AH
+                SHL AX, 3
+                ADD AL, coinOption[0]
+                MOV BX, AX
+                .IF LOGICM[BX] == 'B'
+                    ;-----
+                    MOV BX, OFFSET htmlB1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlB1, SI
+                    ;-----
+                    MOV BX, OFFSET circle
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle, SI
+                .ELSEIF LOGICM[BX] == 'N'
+                    ;-----
+                    MOV BX, OFFSET htmlN1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlN1, SI
+                    ;-----
+                    MOV BX, OFFSET circle
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle, SI
+                .ELSEIF LOGICM1[BX] == 'B'
+                    ;-----
+                    MOV BX, OFFSET htmlAB1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlAB1, SI
+                    ;-----
+                    MOV BX, OFFSET rect
+                    CALL contarRep
+                    writeFile fileHandlerVar, rect, SI
+                .ELSEIF LOGICM1[BX] == 'N'
+                    ;-----
+                    MOV BX, OFFSET htmlAN1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlAN1, SI
+                    ;-----
+                    MOV BX, OFFSET circle1
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle1, SI
+                .ELSEIF LOGICM1[BX] == ' '
+                    ;-----
+                    MOV BX, OFFSET htmlA1
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlA1, SI
+                    ;-----
+                    MOV BX, OFFSET polygon
+                    CALL contarRep
+                    writeFile fileHandlerVar, polygon, SI
+                .ENDIF
+                ;-- COLUMNA
+                MOV AL, ctRep1    
+                MOV coinOption[0], AL
+                ;-- FILA    
+                MOV AL, 08H
+                SUB AL, ctRep2
+                ;-- ACCESO POR MAPEO
+                XOR AH, AH
+                SHL AX, 3
+                ADD AL, coinOption[0]
+                MOV BX, AX
+                .IF LOGICM[BX] == 'B'
+                    ;-----
+                    MOV BX, OFFSET htmlB2
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlB2, SI
+                    ;-----
+                    MOV BX, OFFSET circle
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle, SI
+                .ELSEIF LOGICM[BX] == 'N'
+                    ;-----
+                    MOV BX, OFFSET htmlN2
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlN2, SI
+                    ;-----
+                    MOV BX, OFFSET circle
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle, SI
+                .ELSEIF LOGICM1[BX] == 'B'
+                    ;-----
+                    MOV BX, OFFSET htmlAB2
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlAB2, SI
+                    ;-----
+                    MOV BX, OFFSET rect
+                    CALL contarRep
+                    writeFile fileHandlerVar, rect, SI
+                .ELSEIF LOGICM1[BX] == 'N'
+                    ;-----
+                    MOV BX, OFFSET htmlAN2
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlAN2, SI
+                    ;-----
+                    MOV BX, OFFSET circle1
+                    CALL contarRep
+                    writeFile fileHandlerVar, circle1, SI
+                .ELSEIF LOGICM1[BX] == ' '
+                    ;-----
+                    MOV BX, OFFSET htmlA2
+                    CALL contarRep
+                    writeFile fileHandlerVar, htmlA2, SI
+                    ;-----
+                    MOV BX, OFFSET polygon
+                    CALL contarRep
+                    writeFile fileHandlerVar, polygon, SI
+                .ENDIF
+            .ENDIF
+            .IF (ctRep2 != 1)
+                ;------------------ IMPRESION DE CERRADURA DIV ------------------
+                MOV BX, OFFSET divc
+                CALL contarRep
+                writeFile fileHandlerVar, divc, SI
+            .ENDIF
+            DEC ctRep2
+        .ENDW
+        ;------------------ IMPRESION DE CERRADURA DIV ------------------
+        MOV BX, OFFSET divc
+        CALL contarRep
+        writeFile fileHandlerVar, divc, SI
+        INC ctRep1
+    .ENDW
+    ;------------------ IMPRESION DE CERRADURA DIV ------------------
+    MOV BX, OFFSET divc
+    CALL contarRep
+    writeFile fileHandlerVar, divc, SI
+    ;------------------ IMPRESION DE APERTURA DIV ------------------
+    MOV BX, OFFSET divo
+    CALL contarRep
+    writeFile fileHandlerVar, divo, SI  ;ESCRIBE UN DIV
+    ;------------------ IMPRESION DE FECHA DIV ------------------
+    CALL getDate
+    CALL getTime
+    MOV BX, OFFSET date
+    CALL contarRep
+    writeFile fileHandlerVar, date, SI
+    MOV BX, OFFSET time
+    CALL contarRep
+    writeFile fileHandlerVar, time, SI
+    ;------------------ IMPRESION DE CERRADURA DIV ------------------
+    MOV BX, OFFSET divc
+    CALL contarRep
+    writeFile fileHandlerVar, divc, SI
+    ;------------------ IMPRESION DE CERRADURA HTML ------------------
+    MOV BX, OFFSET htmlend
+    CALL contarRep
+    writeFile fileHandlerVar, htmlend, SI
+    ;------------------ CERRAR ARCHIVO ------------------
+    closeFile fileHandlerVar
+    printStrln fileSc2
+    INC RepCte
+    RET
+genRep1 ENDP
+
 contarRep PROC
     XOR SI, SI
     MOV AL, '$'
@@ -581,6 +876,7 @@ contarRep ENDP
 
 posExist PROC
     XOR DI, DI
+    ;PUSH SI
     PUSH CX
     XOR CH, CH
     MOV CL, ctPOS
@@ -589,11 +885,13 @@ posExist PROC
     .WHILE (DI != SI)
         .IF (POS[DI] == AL)
             MOV AL, 01H
+            ;POP SI
             JMP _posExistExit
             .BREAK
         .ENDIF
         INC DI
     .ENDW
+    ;POP SI
     MOV AL, 00H
     _posExistExit:
         XOR DI, DI
@@ -690,8 +988,10 @@ verifyCatch PROC
                 MOV AL, CL
                 SUB AL, 08H
                 PUSH AX                             ;GUARDA LA POSICION 
+                PUSH SI
                 CALL posExist
                 .IF (AL == 00H)
+                    POP SI
                     POP AX                          ;RECUPERA EL VALOR ALOJADO EN AL
                     PUSH CX                         ;GUARDA EL VALOR DE CX
                     XOR CH, CH                      ;LIMPIA C HIGH
@@ -711,8 +1011,10 @@ verifyCatch PROC
                 MOV AL, CL
                 ADD AL, 08H
                 PUSH AX                         ;GUARDA LA POSICION 
+                PUSH SI
                 CALL posExist
                 .IF (AL == 00H)
+                    POP SI
                     POP AX                         ;RECUPERA EL VALOR ALOJADO EN AL
                     PUSH CX                         ;GUARDA EL VALOR DE CX
                     XOR CH, CH                      ;LIMPIA C HIGH
@@ -732,8 +1034,10 @@ verifyCatch PROC
                 MOV AL, CL
                 ADD AL, 01H
                 PUSH AX                         ;GUARDA LA POSICION 
+                PUSH SI
                 CALL posExist
                 .IF (AL == 00H)
+                    POP SI
                     POP AX                         ;RECUPERA EL VALOR ALOJADO EN AL
                     PUSH CX                         ;GUARDA EL VALOR DE CX
                     XOR CH, CH                      ;LIMPIA C HIGH
@@ -753,8 +1057,10 @@ verifyCatch PROC
                 MOV AL, CL
                 SUB AL, 01H
                 PUSH AX                         ;GUARDA LA POSICION 
+                PUSH SI
                 CALL posExist
                 .IF (AL == 00H)
+                    POP SI
                     POP AX                         ;RECUPERA EL VALOR ALOJADO EN AL
                     PUSH CX                         ;GUARDA EL VALOR DE CX
                     XOR CH, CH                      ;LIMPIA C HIGH
@@ -801,15 +1107,16 @@ verifyCatch PROC
         MOV DI, CX
     .ENDW
     CALL sumarLib
-    .IF (AX == 00H && ctPOS != 00H)       ;EN AX SE ALMACENA LA SUMA 
+    .IF (AL == 00H && ctPOS != 00H)       ;EN AX SE ALMACENA LA SUMA 
         XOR SI, SI      ;LIMPIA INDICE DE ORIGEN
         XOR DI, DI      ;LIMPIA INDICE DE DESTINO
         XOR CX, CX      ;LIMPIA REGISTRO DE CONTEO
         MOV AL, ctPOS   ;MUEVE AL ACUMULADO LOW EL NÚMERO DE POSICIONES 
         MOV CL, ctPOS   ;MUEVE AL CONTADOR LOW EL NÚMERO DLE POSICIONES
         MOV DI, CX      ;MUEVE EL CONTADOR AL INDICE DE DESTINO
-        .IF (AH == 'B') ;ENTONCES ENEMIGAS NEGRAS 
+        .IF (actTurn == 00H)            
             ADD scoreN, AL              ;SUMA ACUMULADOR LOW AL PUNTEO DE NEGROS
+            SUB scoreB, AL
             .WHILE (SI != DI)
                 MOV AL, POS[SI]         ;RECUPERA LA POSICIÓN A CAPTURAR Y LA ALMACENA EN ACUMULADOR LOW
                 PUSH DI                 ;ALMACENA EL VALOR ORIGNAL DE DI
@@ -821,6 +1128,7 @@ verifyCatch PROC
             .ENDW
         .ELSE ;ENTONCES ENEMIGAS BLANCAS
             ADD scoreB, AL              ;SUMA ACUMULADOR LOW AL PUNTEO DE BLANCAS
+            SUB scoreN, AL
             .WHILE (SI != DI)
                 MOV AL, POS[SI]         ;RECUPERA LA POSICIÓN
                 PUSH DI                 ;ALMACENA EL VALOR ORIGINAL DE DI
@@ -984,6 +1292,14 @@ verifySuicide PROC
         printStrln coinEr1
         ;REVERTIR COLOCACIÓN DE FICHA
         MOV LOGICM[BX], ' '
+        ;REVERTIR CAMBIO DE TURNO
+        .IF (actTurn == 01H)
+            DEC actTurn
+            DEC scoreB
+        .ELSE
+            INC actTurn
+            DEC scoreN
+        .ENDIF
     .ENDIF
     RET
 verifySuicide ENDP
