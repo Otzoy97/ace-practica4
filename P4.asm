@@ -624,12 +624,15 @@ verifyCatch PROC
     .ELSE
         MOV AH, 'B'
     .ENDIF
+    XOR CX, CX
+    XOR SI, SI
     .IF (BX > 7)                 
         ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
         .IF (LOGICM[BX - 8] == AH)
             MOV CL, BL
             SUB CL, 08H
-            MOV POS, CL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN ENEMIGO
+            MOV POS[SI], CL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN ENEMIGO
+            INC SI
             INC ctPOS                   ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
         .ENDIF
    .ENDIF
@@ -638,7 +641,8 @@ verifyCatch PROC
         .IF (LOGICM[BX + 8] == AH)
             MOV CL, BL
             ADD CL, 08H
-            MOV POS[1], CL
+            MOV POS[SI], CL
+            INC SI
             INC ctPOS
            .ENDIF
     .ENDIF
@@ -647,7 +651,8 @@ verifyCatch PROC
         .IF (LOGICM[BX + 1] == AH)
             MOV CL, BL
             ADD CL, 01H
-            MOV POS[2], CL
+            MOV POS[SI], CL
+            INC SI
             INC ctPOS
         .ENDIF
     .ENDIF
@@ -656,7 +661,8 @@ verifyCatch PROC
         .IF (LOGICM[BX - 1] == AH)
             MOV CL, BL
             SUB CL, 01H
-            MOV POS[3], CL
+            MOV POS[SI], CL
+            INC SI
             INC ctPOS
         .ENDIF
     .ENDIF
@@ -674,17 +680,19 @@ verifyCatch PROC
     ;.ENDIF
     .WHILE( SI != DI)
         ;RECUPERA LA FORMACIÓN
+        XOR CH, CH
         MOV CL, POS[SI]
         .IF (CX > 7)                 
             ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
             MOV DI, CX
+            MOV AH, actTurn
             .IF (LOGICM[DI - 8] == AH)
                 MOV AL, CL
                 SUB AL, 08H
-                PUSH AX                         ;GUARDA LA POSICION 
+                PUSH AX                             ;GUARDA LA POSICION 
                 CALL posExist
                 .IF (AL == 00H)
-                    POP AX                         ;RECUPERA EL VALOR ALOJADO EN AL
+                    POP AX                          ;RECUPERA EL VALOR ALOJADO EN AL
                     PUSH CX                         ;GUARDA EL VALOR DE CX
                     XOR CH, CH                      ;LIMPIA C HIGH
                     MOV CL, ctPOS                   ;MUEVE A CLOW
@@ -698,6 +706,7 @@ verifyCatch PROC
         .IF (CX < 56)                       
             ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
             MOV DI, CX
+            MOV AH, actTurn
             .IF (LOGICM[DI + 8] == AH)
                 MOV AL, CL
                 ADD AL, 08H
@@ -718,6 +727,7 @@ verifyCatch PROC
         .IF (CX != 7 && CX != 15 && CX != 23 && CX != 31 && CX != 39 && CX != 47 && CX != 55 && CX != 63)
             ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
             MOV DI, CX
+            MOV AH, actTurn
             .IF (LOGICM[DI + 1] == AH)
                 MOV AL, CL
                 ADD AL, 01H
@@ -738,6 +748,7 @@ verifyCatch PROC
         .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 48 && CX != 56)
             ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
             MOV DI, CX
+            MOV AH, actTurn
             .IF (LOGICM[DI - 1] == AH)
                 MOV AL, CL
                 SUB AL, 01H
@@ -777,7 +788,7 @@ verifyCatch PROC
                 INC LIB[SI]
             .ENDIF
         .ENDIF
-        .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 58 && CX != 66)
+        .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 48 && CX != 56)
             ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
             MOV DI, CX
             .IF (LOGICM[DI - 1] == 20H)
@@ -951,7 +962,7 @@ verifySuicide PROC
                 INC LIB[SI]
             .ENDIF
         .ENDIF
-        .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 58 && CX != 66)
+        .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 48 && CX != 56)
             ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
             MOV DI, CX
             .IF (LOGICM[DI - 1] == 20H)
