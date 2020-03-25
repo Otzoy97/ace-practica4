@@ -240,9 +240,14 @@ main proc
                     .IF (LOGICM[CX - 8] == AH)
                         MOV AL, CL
                         SUB AL, 08H
-                        MOV DI, ctPOS
-                        MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
-                        INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                        PUSH AL                         ;GUARDA LA POSICION 
+                        CALL posExist
+                        .IF (AL == 00H)
+                            POP AL                         ;RECUPERA EL VALOR ALOJADO EN AL
+                            MOV DI, ctPOS                   ;
+                            MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
+                            INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                        .ENDIF
                     .ENDIF
                 .ENDIF
                 .IF (CX < 56)                       
@@ -250,9 +255,14 @@ main proc
                     .IF (LOGICM[CX + 8] == AH)
                         MOV AL, CL
                         ADD AL, 08H
-                        MOV DI, ctPOS
-                        MOV POS[DI], AL
-                        INC ctPOS
+                        PUSH AL                         ;GUARDA LA POSICION 
+                        CALL posExist
+                        .IF (AL == 00H)
+                            POP AL                         ;RECUPERA EL VALOR ALOJADO EN AL
+                            MOV DI, ctPOS                   ;
+                            MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
+                            INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                        .ENDIF
                     .ENDIF
                 .ENDIF
                 .IF (CX != 7 && CX != 15 && CX != 23 && CX != 31 && CX != 39 && CX != 47 && CX != 55 && CX != 63)
@@ -260,9 +270,14 @@ main proc
                     .IF (LOGICM[CX + 1] == AH)
                         MOV AL, CL
                         ADD AL, 01H
-                        MOV DI, ctPOS
-                        MOV POS[DI], AL
-                        INT ctPOS
+                        PUSH AL                         ;GUARDA LA POSICION 
+                        CALL posExist
+                        .IF (AL == 00H)
+                            POP AL                         ;RECUPERA EL VALOR ALOJADO EN AL
+                            MOV DI, ctPOS                   ;
+                            MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
+                            INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                        .ENDIF
                     .ENDIF
                 .ENDIF
                 .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 48 && CX != 56)
@@ -270,9 +285,14 @@ main proc
                     .IF (LOGICM[CX - 1] == AH)
                         MOV AL, CL
                         SUB AL, 01H
-                        MOV DI, ctPOS
-                        MOV POS[DI], AL
-                        INC ctPOS
+                        PUSH AL                         ;GUARDA LA POSICION 
+                        CALL posExist
+                        .IF (AL == 00H)
+                            POP AL                         ;RECUPERA EL VALOR ALOJADO EN AL
+                            MOV DI, ctPOS                   ;
+                            MOV POS[DI], AL                 ;ALOJA LA POSICIÓN EN DÓNDE SE ENCONTRÓ A UN AMIGO
+                            INC ctPOS                       ;AUMENTA EL CONTDOR DE POSICIONES ALOJADAS
+                        .ENDIF
                     .ENDIF
                 .ENDIF
                 ;------ CONTARÁ LIBERTADES
@@ -713,6 +733,7 @@ LOCAL cteARR:BYTE, ptPOS:BYTE
     .ENDW
     MOV AL, 00H
     _posExistExit:
+        XOR DI, DI
         RET
 posExist PROC
 
