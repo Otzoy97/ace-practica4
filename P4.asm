@@ -970,17 +970,11 @@ verifyCatch PROC
     XOR DI, DI
     MOV CL, ctPOS
     MOV DI, CX
-    ;CAMBIA A BUSCAR FICHAS AMIGAS
-    ;.IF (AH == 'B')
-    ;    MOV AH, 'N' 
-    ;.ELSE
-    ;    MOV AH, 'B'
-    ;.ENDIF
     .WHILE( SI != DI)
         ;RECUPERA LA FORMACIÓN
         XOR CH, CH
         MOV CL, POS[SI]
-        .IF (CX > 7)                 
+        .IF (CX > 07H)                 
             ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
             MOV DI, CX
             MOV AH, actTurn
@@ -1003,7 +997,7 @@ verifyCatch PROC
                 .ENDIF
             .ENDIF
         .ENDIF
-        .IF (CX < 56)                       
+        .IF (CX < 38H)                       
             ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
             MOV DI, CX
             MOV AH, actTurn
@@ -1026,7 +1020,7 @@ verifyCatch PROC
                 .ENDIF
             .ENDIF
         .ENDIF
-        .IF (CX != 7 && CX != 15 && CX != 23 && CX != 31 && CX != 39 && CX != 47 && CX != 55 && CX != 63)
+        .IF (CX != 07H && CX != 0FH && CX != 17H && CX != 1FH && CX != 27H && CX != 2FH && CX != 37H && CX != 3FH)
             ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
             MOV DI, CX
             MOV AH, actTurn
@@ -1049,7 +1043,7 @@ verifyCatch PROC
                 .ENDIF
             .ENDIF
         .ENDIF
-        .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 48 && CX != 56)
+        .IF (CX != 00H && CX != 08H && CX != 10H && CX != 18H && CX != 20H && CX != 28H && CX != 30H && CX != 38H)
             ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
             MOV DI, CX
             MOV AH, actTurn
@@ -1073,28 +1067,28 @@ verifyCatch PROC
             .ENDIF
         .ENDIF
         ;------ CONTARÁ LIBERTADES
-        .IF (CX > 7)                 
+        .IF  (CX > 07H)                
             ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
             MOV DI, CX
             .IF (LOGICM[DI - 8] == 20H)
                 INC LIB[SI]
             .ENDIF
         .ENDIF
-        .IF (CX < 56)                       
+        .IF (CX < 38H)                      
             ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
             MOV DI, CX
             .IF (LOGICM[DI + 8] == 20H)
                 INC LIB[SI]
             .ENDIF
         .ENDIF
-        .IF (CX != 7 && CX != 15 && CX != 23 && CX != 31 && CX != 39 && CX != 47 && CX != 55 && CX != 63)
+        .IF (CX != 07H && CX != 0FH && CX != 17H && CX != 1FH && CX != 27H && CX != 2FH && CX != 37H && CX != 3FH)
             ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
             MOV DI, CX
             .IF (LOGICM[DI + 1] == 20H)
                 INC LIB[SI]
             .ENDIF
         .ENDIF
-        .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 48 && CX != 56)
+        .IF (CX != 00H && CX != 08H && CX != 10H && CX != 18H && CX != 20H && CX != 28H && CX != 30H && CX != 38H)
             ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
             MOV DI, CX
             .IF (LOGICM[DI - 1] == 20H)
@@ -1168,7 +1162,7 @@ verifySuicide PROC
         ;RECUPERA LA FORMACIÓN
         XOR CH, CH
         MOV CL, POS[SI]
-        .IF (CX > 7)                 
+        .IF  (CX > 07H)                  
             ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
             MOV DI, CX
             .IF (LOGICM[DI - 8] == AH)
@@ -1188,7 +1182,7 @@ verifySuicide PROC
                 .ENDIF
             .ENDIF
         .ENDIF
-        .IF (CX < 56)                       
+        .IF (CX < 38H)                
             ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
             MOV DI, CX
             .IF (LOGICM[DI + 8] == AH)
@@ -1208,7 +1202,7 @@ verifySuicide PROC
                 .ENDIF
             .ENDIF
         .ENDIF
-        .IF (CX != 7 && CX != 15 && CX != 23 && CX != 31 && CX != 39 && CX != 47 && CX != 55 && CX != 63)
+        .IF (CX != 07H && CX != 0FH && CX != 17H && CX != 1FH && CX != 27H && CX != 2FH && CX != 37H && CX != 3FH)
             ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
             MOV DI, CX
             .IF (LOGICM[DI + 1] == AH)
@@ -1228,7 +1222,7 @@ verifySuicide PROC
                 .ENDIF
             .ENDIF
         .ENDIF
-        .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 48 && CX != 56)
+        .IF (CX != 00H && CX != 08H && CX != 10H && CX != 18H && CX != 20H && CX != 28H && CX != 30H && CX != 38H)
             ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
             MOV DI, CX
             .IF (LOGICM[DI - 1] == AH)
@@ -1249,28 +1243,28 @@ verifySuicide PROC
             .ENDIF
         .ENDIF
         ;------ CONTARÁ LIBERTADES
-        .IF (CX > 7)                 
+        .IF  (CX > 07H)                
             ;SI ES MENOR A 8 NO VERIFICARÁ HACIA ARRIBA
             MOV DI, CX
             .IF (LOGICM[DI - 8] == 20H)
                 INC LIB[SI]
             .ENDIF
         .ENDIF
-        .IF (CX < 56)                       
+        .IF (CX < 38H)                         
             ;SI ES MAYOR O IGUAL A 56 NO VERIFCARÁ HACIA ABAJO
             MOV DI, CX
             .IF (LOGICM[DI + 8] == 20H)
                 INC LIB[SI]
             .ENDIF
         .ENDIF
-        .IF (CX != 7 && CX != 15 && CX != 23 && CX != 31 && CX != 39 && CX != 47 && CX != 55 && CX != 63)
+        .IF (CX != 07H && CX != 0FH && CX != 17H && CX != 1FH && CX != 27H && CX != 2FH && CX != 37H && CX != 3FH)
             ;SI ES UN LATERAL IZQUIERDO NO VERIFICARÁ HACIA LA IZQUIERDA
             MOV DI, CX
             .IF (LOGICM[DI + 1] == 20H)
                 INC LIB[SI]
             .ENDIF
         .ENDIF
-        .IF (CX != 0 && CX != 8 && CX != 16 && CX != 24 && CX != 32 && CX != 40 && CX != 48 && CX != 56)
+        .IF (CX != 00H && CX != 08H && CX != 10H && CX != 18H && CX != 20H && CX != 28H && CX != 30H && CX != 38H)
             ;SI ES UN LATERAL DERECHO NO VERIFICARÁ HACIA LA DERECHA
             MOV DI, CX
             .IF (LOGICM[DI - 1] == 20H)
@@ -1283,11 +1277,7 @@ verifySuicide PROC
         MOV DI, CX
     .ENDW
     CALL sumarLib
-    .IF (AX == 0)
-        XOR SI, SI
-        XOR DI, DI
-        XOR CX, CX
-        MOV AL, ctPOS
+    .IF (AL == 00H)
         ;MOVIMIENTO ILEGAL : SUICIDIO
         printStrln coinEr1
         ;REVERTIR COLOCACIÓN DE FICHA
