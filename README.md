@@ -8,3 +8,4 @@ ARQUITECTURA DE COMPUTADORES Y ENSAMBLADORES 1<br>
 * El programa consiste en simular el juego Go.
 * El programa está escrito en macro assembler
 
+_ver los manuales para más info_
